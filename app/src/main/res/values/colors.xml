@@ -7,4 +7,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="traffic_light_green">#2dc937</color>
+    <color name="traffic_light_amber">#e7b416</color>
+    <color name="traffic_light_red">#cc3232</color>
+
+    <color name="googlered">#DE5246</color>
+
+    <color name="dark_purple">#363062</color>
+    <color name="purple">#4d4c7d</color>
+    <color name="light_purple">#827397</color>
+    <color name="peach">#d8b9c3</color>
 </resources>

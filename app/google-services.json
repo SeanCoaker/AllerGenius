@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "256482309703",
+    "firebase_url": "https://allergenius-2c645.firebaseio.com",
+    "project_id": "allergenius-2c645",
+    "storage_bucket": "allergenius-2c645.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:256482309703:android:2df902695072857f4f2362",
+        "android_client_info": {
+          "package_name": "com.coaker.foodlabelapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "256482309703-fdveu752olq9uf0j0dvlsh401u7qo91i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe9sv3Dlym2RL-nFndsFh9te8-cVpy7yE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "256482309703-fdveu752olq9uf0j0dvlsh401u7qo91i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

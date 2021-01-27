@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="10dp"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="70dp"
+        android:layout_height="3dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/black" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/foodNameLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginVertical="40dp"
+            android:layout_marginStart="20dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/editTextFoodName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint=""
+                android:inputType="text"
+                android:textColor="@color/black" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginVertical="20dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/your_food_score"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/textViewFoodScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/circle"
+                android:backgroundTint="@color/traffic_light_amber"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="50dp"
+                android:textStyle="bold"
+                tools:ignore="SpUsage" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/idLayout"
+            android:layout_alignParentStart="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/display_id"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/displayIdLayout"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:clickable="false">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextDisplayID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/product_id"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        style="@style/AppTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="top">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/ingredientsTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ingredients" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/nutritionTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nutrition" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/allergensTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/allergens" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <include
+        android:id="@+id/ingredientsLayout"
+        layout="@layout/ingredients_layout" />
+
+    <include
+        android:id="@+id/nutritionLayout"
+        android:visibility="gone"
+        layout="@layout/nutrition_layout" />
+
+    <include
+        android:id="@+id/allergensLayout"
+        android:visibility="gone"
+        layout="@layout/allergens_layout" />
+
+</LinearLayout>

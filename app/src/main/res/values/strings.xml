@@ -1,3 +1,48 @@
 <resources>
     <string name="app_name">Food Label App</string>
+    <string name="scan_barcode">Scan Barcode</string>
+
+    <string name="product_id">Product ID</string>
+    <string name="display_id">Display ID</string>
+
+    <string name="your_food_score">Your Food Score</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="nutrition">Nutrition</string>
+    <string name="allergens">Allergens</string>
+    <string name="energy">Energy</string>
+    <string name="fat">Fat</string>
+    <string name="of_which_saturates">of which Saturates</string>
+    <string name="carbohydrate">Carbohydrate</string>
+    <string name="of_which_sugars">of which Sugars</string>
+    <string name="per_100g">Per 100g</string>
+    <string name="nutritional_values">Nutritional Values</string>
+
+    <string name="sign_in_with_email">Sign in with Email</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+
+    <string name="name_hint">Name</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login">Login</string>
+    <string name="register_here">Register Here</string>
+    <string name="create_account">Create Account</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_logout">Logout</string>
+
+    <string name="allergies">Allergies</string>
+
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="add_allergies">Add Allergies…</string>
+    <string name="allergy_text_hint">Allergies separated by a comma</string>
+    <string name="add">Add</string>
+    <string name="customise">Customise</string>
+    <string name="ok">OK</string>
+
+    <string name="allergiesTitle"><u>Allergies</u></string>
+    <string name="traffic_light_scheme_title"><u>Traffic Light Scheme</u></string>
+    <string name="c">C</string>
+    <string name="b">B</string>
+    <string name="a">A</string>
 </resources>

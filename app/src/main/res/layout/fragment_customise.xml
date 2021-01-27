@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        android:layout_marginVertical="@dimen/card_margin_vert"
+        android:layout_marginHorizontal="@dimen/card_margin_hor"
+        app:contentPaddingTop="10dp"
+        app:contentPaddingBottom="10dp"
+        app:cardElevation="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/allergiesTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="@string/allergiesTitle"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/colorsButton"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
+
+            <TextView
+                android:id="@+id/allergyPreviewText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:paddingHorizontal="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/colorsButton" />
+
+            <Button
+                android:id="@+id/boldButton"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/italicButton"
+                app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
+
+            <Button
+                android:id="@+id/italicButton"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/underlineButton"
+                app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
+
+            <Button
+                android:id="@+id/underlineButton"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        android:layout_marginVertical="@dimen/card_margin_vert"
+        android:layout_marginHorizontal="@dimen/card_margin_hor"
+        app:contentPaddingTop="10dp"
+        app:contentPaddingBottom="10dp"
+        app:cardElevation="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/trafficLightTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="@string/traffic_light_scheme_title"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/foodScoreA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:text="@string/a"
+                android:textColor="@color/white"
+                android:textSize="50dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/trafficLightTitle"
+                tools:ignore="SpUsage" />
+
+            <TextView
+                android:id="@+id/foodScoreB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:text="@string/b"
+                android:textColor="@color/white"
+                android:textSize="50dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/trafficLightTitle"
+                tools:ignore="SpUsage" />
+
+            <TextView
+                android:id="@+id/foodScoreC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="36dp"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:text="@string/c"
+                android:textColor="@color/white"
+                android:textSize="50dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/trafficLightTitle"
+                tools:ignore="SpUsage" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+
+

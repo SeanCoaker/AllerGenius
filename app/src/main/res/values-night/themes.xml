@@ -12,5 +12,14 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="CustomNav" parent="Widget.Design.NavigationView">
+        <item name="itemBackground">@drawable/drawer_background</item>
+        <item name="itemIconTint">@color/drawer_icon_selected</item>
+        <item name="itemTextColor">@color/drawer_icon_selected</item>
     </style>
 </resources>
