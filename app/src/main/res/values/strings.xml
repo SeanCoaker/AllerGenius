@@ -45,4 +45,17 @@
     <string name="c">C</string>
     <string name="b">B</string>
     <string name="a">A</string>
+    <string name="diary">Diary</string>
+    <string name="symptoms">Symptoms</string>
+    <string name="foods">Foods</string>
+    <string name="symptom">Symptom</string>
+    <string name="food">Food</string>
+    <string name="sun">SUN</string>
+    <string name="mon">MON</string>
+    <string name="tue">TUE</string>
+    <string name="wed">WED</string>
+    <string name="thu">THU</string>
+    <string name="fri">FRI</string>
+    <string name="sat">SAT</string>
+
 </resources>

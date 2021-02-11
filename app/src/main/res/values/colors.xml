@@ -17,5 +17,8 @@
     <color name="dark_purple">#363062</color>
     <color name="purple">#4d4c7d</color>
     <color name="light_purple">#827397</color>
+    <color name="even_lighter_purple">#827397</color>
     <color name="peach">#d8b9c3</color>
+
+    <color name="grey">#d0d4d4</color>
 </resources>

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -22,7 +21,7 @@ import com.google.firebase.ktx.Firebase
 //typealias ValueListener = (rawValue: String, displayValue: String) -> Unit
 
 class MainActivity : AppCompatActivity() {
-//    private val client = OkHttpClient()
+    //    private val client = OkHttpClient()
 //
 //    private var imageAnalyser: ImageAnalysis? = null
 //
@@ -80,7 +79,8 @@ class MainActivity : AppCompatActivity() {
                 val customisationDoc = dataCollection.document("customisation")
                 customisationDoc.get().addOnSuccessListener { customisationDocSnapshot ->
                     if (customisationDocSnapshot.exists()) {
-                        val result = customisationDocSnapshot.toObject(CustomisationData::class.java)
+                        val result =
+                            customisationDocSnapshot.toObject(CustomisationData::class.java)
                         Variables.allergyColour = result!!.allergyColour
                         Variables.allergyBIU = result.allergyBIU
                         Variables.trafficLightA = result.trafficLightA
@@ -108,22 +108,32 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.nav_home -> {
                 val scannerFragment = ScannerFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.flContent, scannerFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.flContent, scannerFragment)
+                    .commit()
             }
 
             R.id.nav_allergies -> {
                 val allergiesFragment = AllergiesFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.flContent, allergiesFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.flContent, allergiesFragment)
+                    .commit()
+            }
+
+            R.id.nav_customise -> {
+                val customiseFragment = CustomiseFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.flContent, customiseFragment)
+                    .commit()
+            }
+
+            R.id.nav_foods_eaten -> {
+                val calendarFragment = DiaryFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.flContent, calendarFragment)
+                    .commit()
             }
 
             R.id.nav_logout -> {
                 logout()
             }
 
-            R.id.nav_customise -> {
-                val customiseFragment = CustomiseFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.flContent, customiseFragment).commit()
-            }
         }
 
         item.isChecked = true

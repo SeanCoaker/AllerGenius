@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="2dp" >
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/calendarDayText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        tools:text="22" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal">
+
+        <View
+            android:id="@+id/foodNotifView"
+            android:layout_width="4.5dp"
+            android:layout_height="4.5dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/food_event_circle" />
+
+        <Space
+            android:id="@+id/eventsSpacer"
+            android:layout_width="2dp"
+            android:layout_height="match_parent" />
+
+        <View
+            android:id="@+id/symptomNotifView"
+            android:layout_width="4.5dp"
+            android:layout_height="4.5dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/symptom_event_circle" />
+
+    </LinearLayout>
+
+</FrameLayout>

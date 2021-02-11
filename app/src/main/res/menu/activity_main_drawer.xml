@@ -21,6 +21,11 @@
             android:title="@string/customise" />
 
         <item
+            android:id="@+id/nav_foods_eaten"
+            android:icon="@drawable/ic_baseline_fastfood_24"
+            android:title="@string/diary" />
+
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_baseline_person_24"
             android:title="@string/menu_logout" />
