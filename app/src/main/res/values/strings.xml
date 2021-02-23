@@ -57,5 +57,14 @@
     <string name="thu">THU</string>
     <string name="fri">FRI</string>
     <string name="sat">SAT</string>
+    <string name="symptoms_error">No symptoms found for this date.</string>
+    <string name="submit">Submit</string>
+    <string name="add_food">Add Food</string>
+    <string name="date">Date</string>
+    <string name="food_item">Food Item</string>
+    <string name="traces">Traces</string>
+    <string name="quantity">Quantity</string>
+    <string name="barcode">Barcode</string>
+    <string name="add_to_calendar">Add to calendar</string>
 
 </resources>

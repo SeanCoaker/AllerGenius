@@ -1,16 +1,20 @@
 package com.coaker.foodlabelapp
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.InputType
 import android.text.SpannableStringBuilder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TableLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -19,10 +23,16 @@ import androidx.core.text.color
 import androidx.core.text.italic
 import androidx.core.text.underline
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.errorprone.annotations.Var
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -30,6 +40,7 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
 
     companion object {
         const val KCAL_TO_KJ_FACTOR = 4.184
+        const val ADD_FOOD_REQUEST_CODE = 2002
     }
 
     private lateinit var root: View
@@ -44,6 +55,9 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
     private var fibre100 = 0.0
     private var protein100 = 0.0
     private var salt100 = 0.0
+
+    private val firestoreDayFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val dateFormatMonth = DateTimeFormatter.ofPattern("MMMM - yyyy")
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -137,7 +151,7 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
 
         val tracesArray = traces!!.split(",")
 
-        val tracesList = SpannableStringBuilder().bold { append("Traces:") }.append("\n")
+        val tracesList = SpannableStringBuilder()
 
         if (tracesArray[0].contains("en:")) {
             tracesArray.forEach {
@@ -150,7 +164,7 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
             }
         }
 
-        tracesTextView.text = tracesList
+        tracesTextView.text = SpannableStringBuilder().bold { append("Traces: ") }.append("$tracesList\n")
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             @SuppressLint("SimpleDateFormat")
@@ -180,6 +194,16 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
+
+
+        val addFoodButton = root.findViewById<Button>(R.id.bottomSheetAddFoodButton)
+        addFoodButton.setOnClickListener {
+            val food = FoodDiaryItem(productId, productName, ingredients.dropLast(1), tracesList.toString().dropLast(1), "0g")
+            val dialog = AddFoodDialogFragment(firestoreDayFormat.format(LocalDate.now()), food)
+            dialog.setTargetFragment(this, ADD_FOOD_REQUEST_CODE)
+            dialog.show(parentFragmentManager, "Add Food")
+        }
+
 
         return root
     }
@@ -433,5 +457,77 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         fragment.setupAnalyser()
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+
+            val monthYear = dateFormatMonth.format(firestoreDayFormat.parse(data!!.getStringExtra("date")))
+            val date = data.getStringExtra("date")
+
+            addFoodPointer(monthYear, date!!)
+        }
+    }
+
+
+    private fun addFoodPointer(monthYear: String, date: String) {
+
+        var events = ArrayList<CalendarEvent>()
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("users").document(Firebase.auth.currentUser!!.uid)
+
+        docRef.get().addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+
+                val eventsCollection = docRef.collection("events")
+
+                val eventsPointersMonth = eventsCollection
+                    .document("eventPointers")
+                    .collection("months")
+                    .document(monthYear)
+
+                eventsPointersMonth.get().addOnSuccessListener { eventPointersDocSnapshot ->
+                    if (eventPointersDocSnapshot.exists()) {
+                        val result = eventPointersDocSnapshot.toObject(EventPointers::class.java)
+                        if (result?.events != null) {
+                            events = result.events
+                        }
+
+                        var exists = false
+
+                        events.forEach {
+                            if (it.day == date) {
+                                it.food = true
+                                exists = true
+                                addPointerToFirestore(monthYear, events)
+                            }
+                        }
+
+                        if (!exists) {
+                            val newEvent = CalendarEvent(date, food = true, symptom = false)
+                            events.add(newEvent)
+                            addPointerToFirestore(monthYear, events)
+                        }
+                    }
+                }
+
+            }
+        }.addOnFailureListener {
+            Log.i("Firestore Read: ", "Failed")
+            val snackbar =
+                Snackbar.make(requireView(), "Could not save food to the cloud", Snackbar.LENGTH_LONG)
+            snackbar.show()
+        }
+    }
+
+    private fun addPointerToFirestore(monthYear: String, events: ArrayList<CalendarEvent>) {
+        val db = FirebaseFirestore.getInstance()
+        val users = db.collection("users")
+
+        users.document(Firebase.auth.uid.toString()).collection("events").document("eventPointers")
+            .collection("months").document(monthYear).set(mapOf("events" to events))
     }
 }
