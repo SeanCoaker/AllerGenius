@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ScannerFragment">
+    android:layout_width="match_parent" android:layout_height="match_parent">
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/arSwitchCam"
+        android:id="@+id/arSwitchAR"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
@@ -17,11 +14,10 @@
         android:text="@string/ar"
         android:textColor="@color/purple" />
 
-    <androidx.camera.view.PreviewView
-        android:id="@+id/viewFinder"
+    <fragment
+        android:id="@+id/sceneform_fragment"
+        android:name="com.coaker.foodlabelapp.CustomArFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </androidx.camera.view.PreviewView>
+        android:layout_height="match_parent" />
 
 </FrameLayout>

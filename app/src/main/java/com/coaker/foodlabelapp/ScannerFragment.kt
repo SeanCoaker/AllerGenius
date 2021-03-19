@@ -1,32 +1,40 @@
 package com.coaker.foodlabelapp
 
 import android.Manifest
-import android.app.Activity
-import android.content.Context
+import android.content.Context.CAMERA_SERVICE
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.util.Size
+import android.util.SparseIntArray
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SwitchCompat
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.ar.core.*
+import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.rendering.Renderable
+import com.google.ar.sceneform.rendering.ViewRenderable
+import com.google.ar.sceneform.ux.TransformableNode
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_scanner.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -43,27 +51,76 @@ class ScannerFragment : Fragment() {
 
     private var imageAnalyser: ImageAnalysis? = null
 
+    private lateinit var cameraView: PreviewView
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var parent: MainActivity
+    private lateinit var root: View
+    private lateinit var arSwitch: SwitchCompat
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        root = inflater.inflate(R.layout.fragment_scanner, container, false)
 
         parent = activity as MainActivity
+
+        arSwitch = root.findViewById(R.id.arSwitchCam)
+
+        cameraView = root.findViewById(R.id.viewFinder)
+
+        checkARAvailability()
 
         // Request camera permissions
         if (allPermissionsGranted()) {
             startCamera()
         } else {
-            ActivityCompat.requestPermissions(parent, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+            ActivityCompat.requestPermissions(
+                parent,
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
+        setupArButton()
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_scanner, container, false)
+        return root
+    }
+
+    private fun checkARAvailability(): Boolean {
+        val availability = ArCoreApk.getInstance().checkAvailability(requireContext())
+
+        if (availability.isTransient) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                checkARAvailability()
+            }, 200)
+        }
+
+        if (availability.isSupported) {
+            arSwitch.visibility = View.VISIBLE
+            arSwitch.isEnabled = true
+        } else {
+            arSwitch.visibility = View.GONE
+            arSwitch.isEnabled = false
+        }
+
+        return availability.isSupported
+    }
+
+
+    // Code from https://developers.google.com/ar/develop/java/enable-arcore#ar-optional
+    private fun setupArButton() {
+
+
+        arSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                parent.switchToArFragment()
+            }
+        }
+
     }
 
 
@@ -96,12 +153,12 @@ class ScannerFragment : Fragment() {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageAnalyser)
+                    this, cameraSelector, preview, imageAnalyser
+                )
 
-            } catch(exc: Exception) {
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
-
 
 
         }, ContextCompat.getMainExecutor(context))
@@ -109,7 +166,8 @@ class ScannerFragment : Fragment() {
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
-            parent.baseContext, it) == PackageManager.PERMISSION_GRANTED
+            parent.baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onDestroy() {
@@ -125,19 +183,22 @@ class ScannerFragment : Fragment() {
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray) {
+        IntArray
+    ) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(context,
+                Toast.makeText(
+                    context,
                     "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    fun showBottomSheet(rawValue: String, displayValue: String) {
+    private fun showBottomSheet(rawValue: String, displayValue: String) {
         var response: JSONObject? = null
         var product: JSONObject?
 
@@ -164,82 +225,92 @@ class ScannerFragment : Fragment() {
         var traces = ""
 
         lifecycleScope.launch {
-            val operation = async(Dispatchers.IO) {
-                response = getProduct(rawValue)
-            }
-            operation.await()
 
             val bottomSheet = BottomSheetBarcodeResult(this@ScannerFragment)
             val bundle = Bundle()
 
-            val status = response!!.getInt("status")
+            try {
+                val operation = async(Dispatchers.IO) {
+                    response = getProduct(rawValue)
+                }
+                operation.await()
 
-            if (status == 1) {
-                product = response!!.getJSONObject("product")
+                val status = response!!.getInt("status")
 
-                println(product!!.toString(5))
+                if (status == 1) {
+                    product = response!!.getJSONObject("product")
 
-                productId = product!!.getString("id")
+                    println(product!!.toString(5))
 
-                brand = product!!.getString("brands")
-                productName = product!!.getString("product_name")
+                    productId = product!!.getString("id")
 
-                val nutriments = product!!.getJSONObject("nutriments")
+                    brand = product!!.getString("brands")
+                    productName = product!!.getString("product_name")
 
-                energyUnit = nutriments.getString("energy_unit")
+                    val nutriments = product!!.getJSONObject("nutriments")
 
-                energy100 = if (energyUnit == "kJ") {
-                    nutriments.getDouble("energy")
-                } else {
-                    nutriments.getDouble("energy-kcal_100g")
+                    energyUnit = nutriments.getString("energy_unit")
+
+                    energy100 = if (energyUnit == "kJ") {
+                        nutriments.getDouble("energy")
+                    } else {
+                        nutriments.getDouble("energy-kcal_100g")
+                    }
+
+                    servingSize = product!!.getString("serving_size")
+                    fat100 = nutriments.getDouble("fat_100g")
+                    saturatedFat100 = nutriments.getDouble("saturated-fat_100g")
+                    carbs100 = nutriments.getDouble("carbohydrates_100g")
+                    sugar100 = nutriments.getDouble("sugars_100g")
+                    fibre100 = nutriments.getDouble("fiber_100g")
+                    protein100 = nutriments.getDouble("proteins_100g")
+                    salt100 = nutriments.getDouble("salt_100g")
+
+                    ingredients = product!!.getString("ingredients_text")
+
+                    val additivesArray = product!!.getJSONArray("additives_tags")
+                    for (i in 0 until additivesArray.length()) {
+                        val additive =
+                            additivesArray.getString(i).removeRange(0, 3).capitalize(Locale.UK)
+                        additives += "$additive\n"
+                    }
+
+                    allergens = product!!.getString("allergens")
+                    traces = product!!.getString("traces")
                 }
 
-                servingSize = product!!.getString("serving_size")
-                fat100 = nutriments.getDouble("fat_100g")
-                saturatedFat100 = nutriments.getDouble("saturated-fat_100g")
-                carbs100 = nutriments.getDouble("carbohydrates_100g")
-                sugar100 = nutriments.getDouble("sugars_100g")
-                fibre100 = nutriments.getDouble("fiber_100g")
-                protein100 = nutriments.getDouble("proteins_100g")
-                salt100 = nutriments.getDouble("salt_100g")
+            } catch (e: org.json.JSONException) {
 
-                ingredients = product!!.getString("ingredients_text")
+            } finally {
 
-                val additivesArray = product!!.getJSONArray("additives_tags")
-                for (i in 0 until additivesArray.length()) {
-                    val additive = additivesArray.getString(i).removeRange(0,3).capitalize(Locale.UK)
-                    additives += "$additive\n"
-                }
 
-                allergens = product!!.getString("allergens")
-                traces = product!!.getString("traces")
+                bundle.putString("productId", productId)
+                bundle.putString("displayValue", displayValue)
+
+                bundle.putString("brand", brand)
+                bundle.putString("product_name", productName)
+
+                bundle.putString("servingSize", servingSize)
+                bundle.putString("energyUnit", energyUnit)
+                bundle.putDouble("energy100", energy100)
+                bundle.putDouble("fat100", fat100)
+                bundle.putDouble("saturatedFat100", saturatedFat100)
+                bundle.putDouble("carbs100", carbs100)
+                bundle.putDouble("sugar100", sugar100)
+                bundle.putDouble("fibre100", fibre100)
+                bundle.putDouble("protein100", protein100)
+                bundle.putDouble("salt100", salt100)
+
+                bundle.putString("ingredients", ingredients)
+                bundle.putString("additives", additives)
+
+                bundle.putString("allergens", allergens)
+                bundle.putString("traces", traces)
+
+                bottomSheet.arguments = bundle
+                bottomSheet.show(parent.supportFragmentManager, TAG)
+
             }
-
-            bundle.putString("productId", productId)
-            bundle.putString("displayValue", displayValue)
-
-            bundle.putString("brand", brand)
-            bundle.putString("product_name", productName)
-
-            bundle.putString("servingSize", servingSize)
-            bundle.putString("energyUnit", energyUnit)
-            bundle.putDouble("energy100", energy100)
-            bundle.putDouble("fat100", fat100)
-            bundle.putDouble("saturatedFat100", saturatedFat100)
-            bundle.putDouble("carbs100", carbs100)
-            bundle.putDouble("sugar100", sugar100)
-            bundle.putDouble("fibre100", fibre100)
-            bundle.putDouble("protein100", protein100)
-            bundle.putDouble("salt100", salt100)
-
-            bundle.putString("ingredients", ingredients)
-            bundle.putString("additives", additives)
-
-            bundle.putString("allergens", allergens)
-            bundle.putString("traces", traces)
-
-            bottomSheet.arguments = bundle
-            bottomSheet.show(parent.supportFragmentManager, TAG)
         }
     }
 
@@ -272,7 +343,8 @@ class ScannerFragment : Fragment() {
         override fun analyze(imageProxy: ImageProxy) {
             val mediaImage = imageProxy.image
             if (mediaImage != null) {
-                val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                val image =
+                    InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
                 val scanner = BarcodeScanning.getClient()
 

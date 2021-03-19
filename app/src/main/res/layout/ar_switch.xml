@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.SwitchCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/arSwitch"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:background="@drawable/switch_background"
+    android:elevation="100dp"
+    android:scaleX="0.8"
+    android:scaleY="0.8"
+    android:text="@string/ar"
+    android:textColor="@color/purple" />

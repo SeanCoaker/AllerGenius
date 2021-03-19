@@ -14,4 +14,6 @@ object Variables {
     var trafficLightA = "#2dc937"
     var trafficLightB = "#e7b416"
     var trafficLightC = "#cc3232"
+
+    var arAvailable = false
 }
