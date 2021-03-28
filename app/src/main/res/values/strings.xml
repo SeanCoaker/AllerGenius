@@ -71,5 +71,15 @@
     <string name="barcode_id">Barcode ID</string>
     <string name="off">Off</string>
     <string name="on">On</string>
+    <string name="scan">Scan</string>
+    <string name="x">X</string>
+    <string name="help">\?</string>
+    <string name="nutritional_values_title"><u>Nutritional Values</u></string>
+    <string name="bold_fat"><b>Fat</b></string>
+    <string name="low">Low</string>
+    <string name="high">High</string>
+    <string name="bold_saturates"><b>Saturates</b></string>
+    <string name="bold_sugar"><b>Sugar</b></string>
+    <string name="bold_salt"><b>Salt</b></string>
 
 </resources>

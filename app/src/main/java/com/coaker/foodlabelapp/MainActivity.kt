@@ -87,6 +87,15 @@ class MainActivity : AppCompatActivity() {
                         Variables.trafficLightA = result.trafficLightA
                         Variables.trafficLightB = result.trafficLightB
                         Variables.trafficLightC = result.trafficLightC
+                        Variables.trafficLightX = result.trafficLightX
+                        Variables.fatLow = result.fatLow
+                        Variables.fatHigh = result.fatHigh
+                        Variables.saturatesLow = result.saturatesLow
+                        Variables.saturatesHigh = result.saturatesHigh
+                        Variables.sugarLow = result.sugarLow
+                        Variables.sugarHigh = result.sugarHigh
+                        Variables.saltLow = result.saltLow
+                        Variables.saltHigh = result.saltHigh
                     }
                 }
             }

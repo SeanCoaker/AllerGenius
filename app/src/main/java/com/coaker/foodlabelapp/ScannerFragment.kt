@@ -1,22 +1,16 @@
 package com.coaker.foodlabelapp
 
 import android.Manifest
-import android.content.Context.CAMERA_SERVICE
 import android.content.pm.PackageManager
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.util.Size
-import android.util.SparseIntArray
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.camera.core.*
@@ -26,10 +20,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.ar.core.*
-import com.google.ar.sceneform.AnchorNode
-import com.google.ar.sceneform.rendering.Renderable
-import com.google.ar.sceneform.rendering.ViewRenderable
-import com.google.ar.sceneform.ux.TransformableNode
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.android.synthetic.main.activity_main.*
@@ -240,7 +230,7 @@ class ScannerFragment : Fragment() {
                 if (status == 1) {
                     product = response!!.getJSONObject("product")
 
-                    println(product!!.toString(5))
+//                    println(product!!.toString(5))
 
                     productId = product!!.getString("id")
 

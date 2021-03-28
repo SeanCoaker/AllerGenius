@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.InputType
 import android.text.SpannableStringBuilder
@@ -36,7 +35,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSheetDialogFragment() {
+class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomSheetDialogFragment() {
 
     companion object {
         const val KCAL_TO_KJ_FACTOR = 4.184
@@ -47,6 +46,7 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
 
     private lateinit var servingSize: String
     private lateinit var energyUnit: String
+    private lateinit var foodScoreText: TextView
     private var energy100 = 0.0
     private var fat100 = 0.0
     private var saturatedFat100 = 0.0
@@ -60,9 +60,9 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
     private val dateFormatMonth = DateTimeFormatter.ofPattern("MMMM - yyyy")
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
 
         root = inflater.inflate(R.layout.barcode_sheet_fragment, container, false)
@@ -91,22 +91,25 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
         val allergens = bundle.getString("allergens")
         val traces = bundle.getString("traces")
 
-        val foodScoreText: TextView = root.findViewById(R.id.textViewFoodScore)
+        foodScoreText = root.findViewById(R.id.textViewFoodScore)
 
         when (val scoreLetter = calculateFoodScore(fat100, saturatedFat100, sugar100, salt100)) {
             "A" -> {
                 foodScoreText.text = scoreLetter
-                foodScoreText.backgroundTintList = ColorStateList.valueOf(Color.parseColor(Variables.trafficLightA))
+                foodScoreText.backgroundTintList =
+                    ColorStateList.valueOf(Color.parseColor(Variables.trafficLightA))
             }
 
             "B" -> {
                 foodScoreText.text = scoreLetter
-                foodScoreText.backgroundTintList = ColorStateList.valueOf(Color.parseColor(Variables.trafficLightB))
+                foodScoreText.backgroundTintList =
+                    ColorStateList.valueOf(Color.parseColor(Variables.trafficLightB))
             }
 
             "C" -> {
                 foodScoreText.text = scoreLetter
-                foodScoreText.backgroundTintList = ColorStateList.valueOf(Color.parseColor(Variables.trafficLightC))
+                foodScoreText.backgroundTintList =
+                    ColorStateList.valueOf(Color.parseColor(Variables.trafficLightC))
             }
         }
 
@@ -127,12 +130,14 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
         val tabLayout: TabLayout = root.findViewById(R.id.tabLayout)
 
         val ingredientsLayout: View = root.findViewById(R.id.ingredientsLayout)
-        val ingredientsListTextView: TextView = ingredientsLayout.findViewById(R.id.ingredientsListTextView)
+        val ingredientsListTextView: TextView =
+            ingredientsLayout.findViewById(R.id.ingredientsListTextView)
         val additivesListTextView: TextView = ingredientsLayout.findViewById(R.id.additivesTextView)
 
         findAllergens(ingredients!!, ingredientsListTextView)
 
-        val additivesList = SpannableStringBuilder().bold { append("Additives:") }.append("\n$additives")
+        val additivesList =
+            SpannableStringBuilder().bold { append("Additives:") }.append("\n$additives")
         additivesListTextView.text = additivesList
 
 
@@ -146,7 +151,8 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
         val allergensTextView: TextView = allergensLayout.findViewById(R.id.allergensListTextView)
         val tracesTextView: TextView = allergensLayout.findViewById(R.id.tracesTextView)
 
-        val allergensList = SpannableStringBuilder().bold { append("Allergens:") }.append("\n$allergens")
+        val allergensList =
+            SpannableStringBuilder().bold { append("Allergens:") }.append("\n$allergens")
         allergensTextView.text = allergensList
 
         val tracesArray = traces!!.split(",")
@@ -164,11 +170,13 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
             }
         }
 
-        tracesTextView.text = SpannableStringBuilder().bold { append("Traces: ") }.append("$tracesList\n")
+        tracesTextView.text =
+            SpannableStringBuilder().bold { append("Traces: ") }.append("$tracesList\n")
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             @SuppressLint("SimpleDateFormat")
             override fun onTabSelected(tab: TabLayout.Tab) {
+
                 when (tab.text) {
                     "Ingredients" -> {
                         nutritionLayout.visibility = View.GONE
@@ -198,7 +206,13 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
 
         val addFoodButton = root.findViewById<Button>(R.id.bottomSheetAddFoodButton)
         addFoodButton.setOnClickListener {
-            val food = FoodDiaryItem(productId, productName, ingredients.dropLast(1), tracesList.toString().dropLast(1), "0g")
+            val food = FoodDiaryItem(
+                productId,
+                productName,
+                ingredients.dropLast(1),
+                tracesList.toString().dropLast(1),
+                "0g"
+            )
             val dialog = AddFoodDialogFragment(firestoreDayFormat.format(LocalDate.now()), food)
             dialog.setTargetFragment(this, ADD_FOOD_REQUEST_CODE)
             dialog.show(parentFragmentManager, "Add Food")
@@ -211,6 +225,7 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
     private fun findAllergens(ingredients: String, ingredientsBox: TextView) {
         val output = SpannableStringBuilder().bold { append("Ingredients:\n") }
         val ingredientList = ingredients.split(",")
+        var containsAllergen = false;
 
         ingredientList.forEach { ingredient ->
             var isAllergen = false
@@ -221,7 +236,7 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
 
                     when (Variables.allergyBIU) {
                         "NIL" -> {
-                            output.color(colour) { append(ingredient)  }.append(",")
+                            output.color(colour) { append(ingredient) }.append(",")
                         }
 
                         "B" -> {
@@ -237,29 +252,40 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
                         }
 
                         "BI" -> {
-                            output.color(colour) { bold { italic { append(ingredient) } } }.append(",")
+                            output.color(colour) { bold { italic { append(ingredient) } } }
+                                .append(",")
                         }
 
                         "BU" -> {
-                            output.color(colour) { bold { underline { append(ingredient) } } }.append(",")
+                            output.color(colour) { bold { underline { append(ingredient) } } }
+                                .append(",")
                         }
 
                         "IU" -> {
-                            output.color(colour) { italic { underline { append(ingredient) } } }.append(",")
+                            output.color(colour) { italic { underline { append(ingredient) } } }
+                                .append(",")
                         }
 
                         "BIU" -> {
-                            output.color(colour) { bold { italic { underline { append(ingredient) } } } }.append(",")
+                            output.color(colour) { bold { italic { underline { append(ingredient) } } } }
+                                .append(",")
                         }
                     }
 
                     isAllergen = true
+                    containsAllergen = true;
                 }
             }
 
             if (!isAllergen) {
                 output.append("$ingredient,")
             }
+        }
+
+        if (containsAllergen) {
+            foodScoreText.text = "X"
+            foodScoreText.backgroundTintList =
+                ColorStateList.valueOf(Color.parseColor(Variables.trafficLightX))
         }
 
         ingredientsBox.text = output.delete(output.length - 2, output.length)
@@ -290,17 +316,23 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
                 energyKj100TextView.text = stringEnergyKj100
 
 
-                val energyServingKj = BigDecimal(energy100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                val energyServingKj =
+                    BigDecimal(energy100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
 
                 stringEnergyKjServing = "$energyServingKj $energyUnit"
                 energyKjServingTextView.text = stringEnergyKjServing
 
 
-                val energyKcal100FromKj = BigDecimal(energy100 / KCAL_TO_KJ_FACTOR).setScale(1, RoundingMode.HALF_UP)
+                val energyKcal100FromKj =
+                    BigDecimal(energy100 / KCAL_TO_KJ_FACTOR).setScale(1, RoundingMode.HALF_UP)
                 stringEnergyKcal100 = "$energyKcal100FromKj kcal"
                 energyKcal100TextView.text = stringEnergyKcal100
 
-                val energyServingKcalFromKj = BigDecimal((energy100 / KCAL_TO_KJ_FACTOR) / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                val energyServingKcalFromKj =
+                    BigDecimal((energy100 / KCAL_TO_KJ_FACTOR) / servingFactor).setScale(
+                        1,
+                        RoundingMode.HALF_UP
+                    )
                 stringEnergyKcalServing = "$energyServingKcalFromKj kcal"
                 energyKcalServingTextView.text = stringEnergyKcalServing
             } else {
@@ -313,56 +345,77 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
                 energyKcalServingTextView.text = stringEnergyKcalServing
 
 
-                val energyKj100FromKcal = BigDecimal(energy100 * KCAL_TO_KJ_FACTOR).setScale(1, RoundingMode.HALF_UP)
+                val energyKj100FromKcal =
+                    BigDecimal(energy100 * KCAL_TO_KJ_FACTOR).setScale(1, RoundingMode.HALF_UP)
                 stringEnergyKj100 = "$energyKj100FromKcal kJ"
                 energyKj100TextView.text = stringEnergyKj100
 
-                val energyServingKjFromKcal = BigDecimal((energy100 * KCAL_TO_KJ_FACTOR) / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                val energyServingKjFromKcal =
+                    BigDecimal((energy100 * KCAL_TO_KJ_FACTOR) / servingFactor).setScale(
+                        1,
+                        RoundingMode.HALF_UP
+                    )
                 stringEnergyKjServing = "$energyServingKjFromKcal kJ"
                 energyKjServingTextView.text = stringEnergyKjServing
             }
 
             val stringFat100 = fat100.toString() + "g"
             table.findViewById<TextView>(R.id.fat100Text).text = stringFat100
-            val stringFatServing = BigDecimal(fat100 / servingFactor).setScale(1, RoundingMode.HALF_UP).toString() + "g"
+            val stringFatServing =
+                BigDecimal(fat100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                    .toString() + "g"
             table.findViewById<TextView>(R.id.fatServingText).text = stringFatServing
 
             val stringSaturates100 = saturatedFat100.toString() + "g"
             table.findViewById<TextView>(R.id.saturates100Text).text = stringSaturates100
-            val stringSaturatesServing = BigDecimal(saturatedFat100 / servingFactor).setScale(1, RoundingMode.HALF_UP).toString() + "g"
+            val stringSaturatesServing =
+                BigDecimal(saturatedFat100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                    .toString() + "g"
             table.findViewById<TextView>(R.id.saturatesServingText).text = stringSaturatesServing
 
             val stringCarbs100 = carbs100.toString() + "g"
             table.findViewById<TextView>(R.id.carb100Text).text = stringCarbs100
-            val stringCarbsServing = BigDecimal(carbs100 / servingFactor).setScale(1, RoundingMode.HALF_UP).toString() + "g"
+            val stringCarbsServing =
+                BigDecimal(carbs100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                    .toString() + "g"
             table.findViewById<TextView>(R.id.carbServingText).text = stringCarbsServing
 
             val stringSugar100 = sugar100.toString() + "g"
             table.findViewById<TextView>(R.id.sugars100Text).text = stringSugar100
-            val stringSugarServing = BigDecimal(sugar100 / servingFactor).setScale(1, RoundingMode.HALF_UP).toString() + "g"
+            val stringSugarServing =
+                BigDecimal(sugar100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                    .toString() + "g"
             table.findViewById<TextView>(R.id.sugarsServingText).text = stringSugarServing
 
             val stringFibre100 = fibre100.toString() + "g"
             table.findViewById<TextView>(R.id.fibre100Text).text = stringFibre100
-            val stringFibreServing = BigDecimal(fibre100 / servingFactor).setScale(1, RoundingMode.HALF_UP).toString() + "g"
+            val stringFibreServing =
+                BigDecimal(fibre100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                    .toString() + "g"
             table.findViewById<TextView>(R.id.fibreServingText).text = stringFibreServing
 
             val stringProtein100 = protein100.toString() + "g"
             table.findViewById<TextView>(R.id.protein100Text).text = stringProtein100
-            val stringProteinServing = BigDecimal(protein100 / servingFactor).setScale(1, RoundingMode.HALF_UP).toString() + "g"
+            val stringProteinServing =
+                BigDecimal(protein100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                    .toString() + "g"
             table.findViewById<TextView>(R.id.proteinServingText).text = stringProteinServing
 
             val stringSalt100 = salt100.toString() + "g"
             table.findViewById<TextView>(R.id.salt100Text).text = stringSalt100
-            val stringSaltServing = BigDecimal(salt100 / servingFactor).setScale(1, RoundingMode.HALF_UP).toString() + "g"
+            val stringSaltServing =
+                BigDecimal(salt100 / servingFactor).setScale(1, RoundingMode.HALF_UP)
+                    .toString() + "g"
             table.findViewById<TextView>(R.id.saltServingText).text = stringSaltServing
+
         } else {
 
             if (energyUnit == "kJ") {
                 stringEnergyKj100 = "$energy100 $energyUnit"
                 energyKj100TextView.text = stringEnergyKj100
 
-                val energyKcal100FromKj = BigDecimal(energy100 / KCAL_TO_KJ_FACTOR).setScale(1, RoundingMode.HALF_UP)
+                val energyKcal100FromKj =
+                    BigDecimal(energy100 / KCAL_TO_KJ_FACTOR).setScale(1, RoundingMode.HALF_UP)
                 stringEnergyKcal100 = "$energyKcal100FromKj kcal"
                 energyKcal100TextView.text = stringEnergyKcal100
 
@@ -370,7 +423,8 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
                 stringEnergyKcal100 = "$energy100 $energyUnit"
                 energyKcal100TextView.text = stringEnergyKcal100
 
-                val energyKj100FromKcal = BigDecimal(energy100 * KCAL_TO_KJ_FACTOR).setScale(1, RoundingMode.HALF_UP)
+                val energyKj100FromKcal =
+                    BigDecimal(energy100 * KCAL_TO_KJ_FACTOR).setScale(1, RoundingMode.HALF_UP)
                 stringEnergyKj100 = "$energyKj100FromKcal kJ"
                 energyKj100TextView.text = stringEnergyKj100
             }
@@ -398,33 +452,38 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
         }
     }
 
-    private fun calculateFoodScore(fat: Double, saturates: Double, sugar: Double, salt: Double): String {
+    private fun calculateFoodScore(
+        fat: Double,
+        saturates: Double,
+        sugar: Double,
+        salt: Double
+    ): String {
         var greenValue = 0
         var amberValue = 0
         var redValue = 0
 
         when {
-            fat <= 3.0 -> greenValue++
-            fat in 3.1..17.5 -> amberValue++
-            else -> redValue++
+            fat <= Variables.fatLow -> greenValue++
+            fat > Variables.fatHigh -> redValue++
+            else -> amberValue++
         }
 
         when {
-            saturates <= 1.5 -> greenValue++
-            saturates in 1.6..5.0 -> amberValue++
-            else -> redValue++
+            saturates <= Variables.saturatesLow -> greenValue++
+            saturates > Variables.saturatesHigh -> redValue++
+            else -> amberValue++
         }
 
         when {
-            sugar <= 5.0 -> greenValue++
-            sugar in 5.1..22.5 -> amberValue++
-            else -> redValue++
+            sugar <= Variables.sugarLow -> greenValue++
+            sugar > Variables.sugarHigh -> redValue++
+            else -> amberValue++
         }
 
         when {
-            salt <= 0.3 -> greenValue++
-            salt in 0.4..1.5 -> amberValue++
-            else -> redValue++
+            salt <= Variables.saltLow -> greenValue++
+            salt > Variables.saltHigh -> redValue++
+            else -> amberValue++
         }
 
         when (greenValue) {
@@ -454,9 +513,10 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
         }
     }
 
+
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        fragment.setupAnalyser()
+        fragment?.setupAnalyser()
     }
 
 
@@ -465,7 +525,8 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
 
         if (resultCode == Activity.RESULT_OK) {
 
-            val monthYear = dateFormatMonth.format(firestoreDayFormat.parse(data!!.getStringExtra("date")))
+            val monthYear =
+                dateFormatMonth.format(firestoreDayFormat.parse(data!!.getStringExtra("date")))
             val date = data.getStringExtra("date")
 
             addFoodPointer(monthYear, date!!)
@@ -518,7 +579,11 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment) : BottomSh
         }.addOnFailureListener {
             Log.i("Firestore Read: ", "Failed")
             val snackbar =
-                Snackbar.make(requireView(), "Could not save food to the cloud", Snackbar.LENGTH_LONG)
+                Snackbar.make(
+                    requireView(),
+                    "Could not save food to the cloud",
+                    Snackbar.LENGTH_LONG
+                )
             snackbar.show()
         }
     }

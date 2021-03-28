@@ -1,170 +1,379 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    android:orientation="vertical">
+    android:layout_width="match_parent">
 
-    <androidx.cardview.widget.CardView
-        app:cardCornerRadius="@dimen/card_corner_radius"
-        android:layout_marginVertical="@dimen/card_margin_vert"
-        android:layout_marginHorizontal="@dimen/card_margin_hor"
-        app:contentPaddingTop="10dp"
-        app:contentPaddingBottom="10dp"
-        app:cardElevation="20dp"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.cardview.widget.CardView
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            android:layout_marginVertical="@dimen/card_margin_vert"
+            android:layout_marginHorizontal="@dimen/card_margin_hor"
+            app:contentPaddingTop="10dp"
+            app:contentPaddingBottom="10dp"
+            app:cardElevation="20dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/allergiesTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="monospace"
-                android:text="@string/allergiesTitle"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <Button
-                android:id="@+id/colorsButton"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/allergiesTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/allergiesTitle"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/allergyPreviewText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:paddingHorizontal="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/colorsButton" />
+                <Button
+                    android:id="@+id/colorsButton"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
 
-            <Button
-                android:id="@+id/boldButton"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="12dp"
-                app:layout_constraintEnd_toStartOf="@+id/italicButton"
-                app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
+                <TextView
+                    android:id="@+id/allergyPreviewText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:paddingHorizontal="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.498"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/colorsButton" />
 
-            <Button
-                android:id="@+id/italicButton"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="12dp"
-                app:layout_constraintEnd_toStartOf="@+id/underlineButton"
-                app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
+                <Button
+                    android:id="@+id/boldButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="12dp"
+                    app:layout_constraintEnd_toStartOf="@+id/italicButton"
+                    app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
 
-            <Button
-                android:id="@+id/underlineButton"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
+                <Button
+                    android:id="@+id/italicButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="12dp"
+                    app:layout_constraintEnd_toStartOf="@+id/underlineButton"
+                    app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <Button
+                    android:id="@+id/underlineButton"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
 
-    </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.cardview.widget.CardView
-        app:cardCornerRadius="@dimen/card_corner_radius"
-        android:layout_marginVertical="@dimen/card_margin_vert"
-        android:layout_marginHorizontal="@dimen/card_margin_hor"
-        app:contentPaddingTop="10dp"
-        app:contentPaddingBottom="10dp"
-        app:cardElevation="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        </androidx.cardview.widget.CardView>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.cardview.widget.CardView
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            android:layout_marginVertical="@dimen/card_margin_vert"
+            android:layout_marginHorizontal="@dimen/card_margin_hor"
+            app:contentPaddingTop="10dp"
+            app:contentPaddingBottom="10dp"
+            app:cardElevation="20dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/trafficLightTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="monospace"
-                android:text="@string/traffic_light_scheme_title"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/foodScoreA"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="36dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/circle"
-                android:gravity="center"
-                android:text="@string/a"
-                android:textColor="@color/white"
-                android:textSize="50dp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/trafficLightTitle"
-                tools:ignore="SpUsage" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
 
-            <TextView
-                android:id="@+id/foodScoreB"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/circle"
-                android:gravity="center"
-                android:text="@string/b"
-                android:textColor="@color/white"
-                android:textSize="50dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/trafficLightTitle"
-                tools:ignore="SpUsage" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/trafficLightTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="@string/traffic_light_scheme_title"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.498"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/foodScoreC"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="36dp"
-                android:background="@drawable/circle"
-                android:gravity="center"
-                android:text="@string/c"
-                android:textColor="@color/white"
-                android:textSize="50dp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/trafficLightTitle"
-                tools:ignore="SpUsage" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+                    <TextView
+                        android:id="@+id/helpButton"
+                        android:gravity="center"
+                        android:background="@drawable/help_button_circle"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_gravity="end"
+                        android:text="@string/help"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </FrameLayout>
 
 
 
+                <TableLayout
+                    android:stretchColumns="0, 1, 2, 3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
 
+                    <TableRow
+                        android:padding="12dp"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent">
+
+                        <TextView
+                            android:layout_gravity="fill"
+                            android:id="@+id/foodScoreA"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/circle"
+                            android:gravity="center"
+                            android:text="@string/a"
+                            android:textColor="@color/white"
+                            android:textSize="50dp"
+                            android:textStyle="bold"
+                            tools:ignore="SpUsage" />
+
+                        <TextView
+                            android:layout_gravity="fill"
+                            android:id="@+id/foodScoreB"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/circle"
+                            android:gravity="center"
+                            android:text="@string/b"
+                            android:textColor="@color/white"
+                            android:textSize="50dp"
+                            android:textStyle="bold"
+                            tools:ignore="SpUsage" />
+
+                        <TextView
+                            android:layout_gravity="fill"
+                            android:id="@+id/foodScoreC"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/circle"
+                            android:gravity="center"
+                            android:text="@string/c"
+                            android:textColor="@color/white"
+                            android:textSize="50dp"
+                            android:textStyle="bold"
+                            tools:ignore="SpUsage" />
+
+                        <TextView
+                            android:layout_gravity="fill"
+                            android:id="@+id/foodScoreX"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/circle"
+                            android:gravity="center"
+                            android:text="@string/x"
+                            android:textColor="@color/white"
+                            android:textSize="50dp"
+                            android:textStyle="bold"
+                            tools:ignore="SpUsage" />
+
+                    </TableRow>
+
+                </TableLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.cardview.widget.CardView
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            android:layout_marginVertical="@dimen/card_margin_vert"
+            android:layout_marginHorizontal="@dimen/card_margin_hor"
+            app:contentPaddingTop="10dp"
+            app:contentPaddingBottom="10dp"
+            app:cardElevation="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/nutritionalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:text="@string/nutritional_values_title"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <TextView
+                    android:text="@string/bold_fat"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:id="@+id/textLowFat"
+                    android:text="@string/low"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <SeekBar
+                    android:id="@+id/lowFatSeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/textHighFat"
+                    android:text="@string/high"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <SeekBar
+                    android:id="@+id/highFatSeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <TextView
+                    android:text="@string/bold_saturates"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:id="@+id/textLowSaturates"
+                    android:text="@string/low"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <SeekBar
+                    android:id="@+id/lowSaturatesSeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/textHighSaturates"
+                    android:text="@string/high"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <SeekBar
+                    android:id="@+id/highSaturatesSeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <TextView
+                    android:text="@string/bold_sugar"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:id="@+id/textLowSugar"
+                    android:text="@string/low"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <SeekBar
+                    android:id="@+id/lowSugarSeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/textHighSugar"
+                    android:text="@string/high"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <SeekBar
+                    android:id="@+id/highSugarSeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <TextView
+                    android:text="@string/bold_salt"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginVertical="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:id="@+id/textLowSalt"
+                    android:text="@string/low"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <SeekBar
+                    android:id="@+id/lowSaltSeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/textHighSalt"
+                    android:text="@string/high"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+                <SeekBar
+                    android:id="@+id/highSaltSeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.core.widget.NestedScrollView>
 

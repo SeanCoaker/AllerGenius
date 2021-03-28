@@ -54,6 +54,11 @@ class ColorPickerFragment(private val sourceId: String): DialogFragment() {
                 colorPicker.color = parseColor(Variables.trafficLightC)
                 colorPicker.oldCenterColor = parseColor(Variables.trafficLightC)
             }
+
+            "foodScoreX" -> {
+                colorPicker.color = parseColor(Variables.trafficLightX)
+                colorPicker.oldCenterColor = parseColor(Variables.trafficLightX)
+            }
         }
 
         colorPicker.addSVBar(svBar)
@@ -98,6 +103,13 @@ class ColorPickerFragment(private val sourceId: String): DialogFragment() {
 
                     parent.findViewById<TextView>(R.id.foodScoreC).backgroundTintList =
                         ColorStateList.valueOf(parseColor(Variables.trafficLightC))
+                }
+
+                "foodScoreX" -> {
+                    Variables.trafficLightX = "#$hexColor"
+
+                    parent.findViewById<TextView>(R.id.foodScoreX).backgroundTintList =
+                        ColorStateList.valueOf(parseColor(Variables.trafficLightX))
                 }
             }
 
