@@ -24,7 +24,6 @@ import androidx.core.text.underline
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import com.google.errorprone.annotations.Var
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -35,7 +34,8 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomSheetDialogFragment() {
+class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) :
+    BottomSheetDialogFragment() {
 
     companion object {
         const val KCAL_TO_KJ_FACTOR = 4.184
@@ -43,10 +43,10 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomS
     }
 
     private lateinit var root: View
-
     private lateinit var servingSize: String
     private lateinit var energyUnit: String
     private lateinit var foodScoreText: TextView
+
     private var energy100 = 0.0
     private var fat100 = 0.0
     private var saturatedFat100 = 0.0
@@ -96,20 +96,30 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomS
         when (val scoreLetter = calculateFoodScore(fat100, saturatedFat100, sugar100, salt100)) {
             "A" -> {
                 foodScoreText.text = scoreLetter
+                foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 foodScoreText.backgroundTintList =
                     ColorStateList.valueOf(Color.parseColor(Variables.trafficLightA))
             }
 
             "B" -> {
                 foodScoreText.text = scoreLetter
+                foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 foodScoreText.backgroundTintList =
                     ColorStateList.valueOf(Color.parseColor(Variables.trafficLightB))
             }
 
             "C" -> {
                 foodScoreText.text = scoreLetter
+                foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 foodScoreText.backgroundTintList =
                     ColorStateList.valueOf(Color.parseColor(Variables.trafficLightC))
+            }
+
+            "?" -> {
+                foodScoreText.text = scoreLetter
+                foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                foodScoreText.backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white))
             }
         }
 
@@ -118,105 +128,114 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomS
         displayValText.inputType = InputType.TYPE_NULL
         displayValText.text = displayId
 
-        val productIdText: TextView = root.findViewById(R.id.editTextDisplayID)
-        productIdText.isEnabled = false
-        productIdText.inputType = InputType.TYPE_NULL
-        productIdText.text = productId
+        if (requireArguments().size() > 2) {
 
-        val productNameText: TextView = root.findViewById(R.id.editTextFoodName)
-        productNameText.text = productName
+            val productNameText: TextView = root.findViewById(R.id.editTextFoodName)
+            productNameText.text = productName
 
+            val productIdText: TextView = root.findViewById(R.id.editTextDisplayID)
+            productIdText.isEnabled = false
+            productIdText.inputType = InputType.TYPE_NULL
+            productIdText.text = productId
 
-        val tabLayout: TabLayout = root.findViewById(R.id.tabLayout)
+            val tabLayout: TabLayout = root.findViewById(R.id.tabLayout)
 
-        val ingredientsLayout: View = root.findViewById(R.id.ingredientsLayout)
-        val ingredientsListTextView: TextView =
-            ingredientsLayout.findViewById(R.id.ingredientsListTextView)
-        val additivesListTextView: TextView = ingredientsLayout.findViewById(R.id.additivesTextView)
+            val ingredientsLayout: View = root.findViewById(R.id.ingredientsLayout)
+            val ingredientsListTextView: TextView =
+                ingredientsLayout.findViewById(R.id.ingredientsListTextView)
+            val additivesListTextView: TextView = ingredientsLayout.findViewById(R.id.additivesTextView)
 
-        findAllergens(ingredients!!, ingredientsListTextView)
+            findAllergens(ingredients!!, ingredientsListTextView)
 
-        val additivesList =
-            SpannableStringBuilder().bold { append("Additives:") }.append("\n$additives")
-        additivesListTextView.text = additivesList
-
-
-        val nutritionLayout: View = root.findViewById(R.id.nutritionLayout)
-        val nutritionTable: TableLayout = nutritionLayout.findViewById(R.id.nutritionTable)
-
-        setupNutritionTable(nutritionTable)
+            val additivesList =
+                SpannableStringBuilder().bold { append("Additives:") }.append("\n$additives")
+            additivesListTextView.text = additivesList
 
 
-        val allergensLayout: View = root.findViewById(R.id.allergensLayout)
-        val allergensTextView: TextView = allergensLayout.findViewById(R.id.allergensListTextView)
-        val tracesTextView: TextView = allergensLayout.findViewById(R.id.tracesTextView)
+            val nutritionLayout: View = root.findViewById(R.id.nutritionLayout)
+            val nutritionTable: TableLayout = nutritionLayout.findViewById(R.id.nutritionTable)
 
-        val allergensList =
-            SpannableStringBuilder().bold { append("Allergens:") }.append("\n$allergens")
-        allergensTextView.text = allergensList
+            setupNutritionTable(nutritionTable)
 
-        val tracesArray = traces!!.split(",")
+            val allergensLayout: View = root.findViewById(R.id.allergensLayout)
+            val allergensTextView: TextView = allergensLayout.findViewById(R.id.allergensListTextView)
+            val tracesTextView: TextView = allergensLayout.findViewById(R.id.tracesTextView)
 
-        val tracesList = SpannableStringBuilder()
+            val allergensList =
+                SpannableStringBuilder().bold { append("Allergens:") }.append("\n$allergens")
+            allergensTextView.text = allergensList
 
-        if (tracesArray[0].contains("en:")) {
-            tracesArray.forEach {
-                tracesList.append(it.drop(3).capitalize(Locale.UK) + ", ")
+            val tracesArray = traces!!.split(",")
+
+            val tracesList = SpannableStringBuilder()
+
+            if (tracesArray[0].contains("en:")) {
+                tracesArray.forEach {
+                    tracesList.append(it.drop(3).capitalize(Locale.UK) + ", ")
+                }
+            } else {
+                tracesArray.forEach {
+                    val formattedTrace = it.capitalize(Locale.UK)
+                    tracesList.append("$formattedTrace, ")
+                }
             }
-        } else {
-            tracesArray.forEach {
-                val formattedTrace = it.capitalize(Locale.UK)
-                tracesList.append("$formattedTrace, ")
-            }
-        }
 
-        tracesTextView.text =
-            SpannableStringBuilder().bold { append("Traces: ") }.append("$tracesList\n")
+            tracesTextView.text =
+                SpannableStringBuilder().bold { append("Traces: ") }.append("$tracesList\n")
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            @SuppressLint("SimpleDateFormat")
-            override fun onTabSelected(tab: TabLayout.Tab) {
+            tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                @SuppressLint("SimpleDateFormat")
+                override fun onTabSelected(tab: TabLayout.Tab) {
 
-                when (tab.text) {
-                    "Ingredients" -> {
-                        nutritionLayout.visibility = View.GONE
-                        allergensLayout.visibility = View.GONE
-                        ingredientsLayout.visibility = View.VISIBLE
+                    when (tab.text) {
+                        "Ingredients" -> {
+                            nutritionLayout.visibility = View.GONE
+                            allergensLayout.visibility = View.GONE
+                            ingredientsLayout.visibility = View.VISIBLE
+                        }
+
+                        "Nutrition" -> {
+                            ingredientsLayout.visibility = View.GONE
+                            allergensLayout.visibility = View.GONE
+                            nutritionLayout.visibility = View.VISIBLE
+                        }
+
+                        "Allergens" -> {
+                            nutritionLayout.visibility = View.GONE
+                            ingredientsLayout.visibility = View.GONE
+                            allergensLayout.visibility = View.VISIBLE
+                        }
                     }
 
-                    "Nutrition" -> {
-                        ingredientsLayout.visibility = View.GONE
-                        allergensLayout.visibility = View.GONE
-                        nutritionLayout.visibility = View.VISIBLE
-                    }
-
-                    "Allergens" -> {
-                        nutritionLayout.visibility = View.GONE
-                        ingredientsLayout.visibility = View.GONE
-                        allergensLayout.visibility = View.VISIBLE
-                    }
                 }
 
+                override fun onTabUnselected(tab: TabLayout.Tab) {}
+                override fun onTabReselected(tab: TabLayout.Tab) {}
+            })
+
+
+            val addFoodButton = root.findViewById<Button>(R.id.bottomSheetAddFoodButton)
+            addFoodButton.setOnClickListener {
+                val food = FoodDiaryItem(
+                    productId,
+                    productName,
+                    ingredients.dropLast(1),
+                    tracesList.toString().dropLast(1),
+                    "0g"
+                )
+                val dialog = AddFoodDialogFragment(firestoreDayFormat.format(LocalDate.now()), food)
+                dialog.setTargetFragment(this, ADD_FOOD_REQUEST_CODE)
+                dialog.show(parentFragmentManager, "Add Food")
             }
 
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
+        } else {
 
-
-        val addFoodButton = root.findViewById<Button>(R.id.bottomSheetAddFoodButton)
-        addFoodButton.setOnClickListener {
-            val food = FoodDiaryItem(
-                productId,
-                productName,
-                ingredients.dropLast(1),
-                tracesList.toString().dropLast(1),
-                "0g"
-            )
-            val dialog = AddFoodDialogFragment(firestoreDayFormat.format(LocalDate.now()), food)
-            dialog.setTargetFragment(this, ADD_FOOD_REQUEST_CODE)
-            dialog.show(parentFragmentManager, "Add Food")
+            val productIdText: TextView = root.findViewById(R.id.editTextDisplayID)
+            productIdText.isEnabled = false
+            productIdText.inputType = InputType.TYPE_NULL
+            productIdText.text = displayId
         }
+
 
 
         return root
@@ -236,39 +255,39 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomS
 
                     when (Variables.allergyBIU) {
                         "NIL" -> {
-                            output.color(colour) { append(ingredient) }.append(",")
+                            output.color(colour) { append(ingredient) }.append(", ")
                         }
 
                         "B" -> {
-                            output.color(colour) { bold { append(ingredient) } }.append(",")
+                            output.color(colour) { bold { append(ingredient) } }.append(", ")
                         }
 
                         "I" -> {
-                            output.color(colour) { italic { append(ingredient) } }.append(",")
+                            output.color(colour) { italic { append(ingredient) } }.append(", ")
                         }
 
                         "U" -> {
-                            output.color(colour) { underline { append(ingredient) } }.append(",")
+                            output.color(colour) { underline { append(ingredient) } }.append(", ")
                         }
 
                         "BI" -> {
                             output.color(colour) { bold { italic { append(ingredient) } } }
-                                .append(",")
+                                .append(", ")
                         }
 
                         "BU" -> {
                             output.color(colour) { bold { underline { append(ingredient) } } }
-                                .append(",")
+                                .append(", ")
                         }
 
                         "IU" -> {
                             output.color(colour) { italic { underline { append(ingredient) } } }
-                                .append(",")
+                                .append(", ")
                         }
 
                         "BIU" -> {
                             output.color(colour) { bold { italic { underline { append(ingredient) } } } }
-                                .append(",")
+                                .append(", ")
                         }
                     }
 
@@ -278,12 +297,13 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomS
             }
 
             if (!isAllergen) {
-                output.append("$ingredient,")
+                output.append("$ingredient, ")
             }
         }
 
         if (containsAllergen) {
             foodScoreText.text = "X"
+            foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
             foodScoreText.backgroundTintList =
                 ColorStateList.valueOf(Color.parseColor(Variables.trafficLightX))
         }
@@ -452,64 +472,78 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomS
         }
     }
 
+
     private fun calculateFoodScore(
         fat: Double,
         saturates: Double,
         sugar: Double,
         salt: Double
     ): String {
-        var greenValue = 0
-        var amberValue = 0
-        var redValue = 0
 
-        when {
-            fat <= Variables.fatLow -> greenValue++
-            fat > Variables.fatHigh -> redValue++
-            else -> amberValue++
-        }
+        if (requireArguments().size() > 2) {
+            var greenValue = 0
+            var amberValue = 0
+            var redValue = 0
 
-        when {
-            saturates <= Variables.saturatesLow -> greenValue++
-            saturates > Variables.saturatesHigh -> redValue++
-            else -> amberValue++
-        }
-
-        when {
-            sugar <= Variables.sugarLow -> greenValue++
-            sugar > Variables.sugarHigh -> redValue++
-            else -> amberValue++
-        }
-
-        when {
-            salt <= Variables.saltLow -> greenValue++
-            salt > Variables.saltHigh -> redValue++
-            else -> amberValue++
-        }
-
-        when (greenValue) {
-            4 -> {
-                return "A"
+            when {
+                fat <= Variables.fatLow -> greenValue++
+                fat > Variables.fatHigh -> redValue++
+                else -> amberValue++
             }
-            3 -> {
-                return if (redValue == 1) {
-                    "B"
-                } else {
-                    "A"
+
+            when {
+                saturates <= Variables.saturatesLow -> greenValue++
+                saturates > Variables.saturatesHigh -> redValue++
+                else -> amberValue++
+            }
+
+            when {
+                sugar <= Variables.sugarLow -> greenValue++
+                sugar > Variables.sugarHigh -> redValue++
+                else -> amberValue++
+            }
+
+            when {
+                salt <= Variables.saltLow -> greenValue++
+                salt > Variables.saltHigh -> redValue++
+                else -> amberValue++
+            }
+
+            when (greenValue) {
+                4 -> {
+                    return "A"
+                }
+
+                3 -> {
+                    return if (redValue == 1) {
+                        "B"
+                    } else {
+                        "A"
+                    }
+                }
+
+                2 -> {
+                    return "B"
+                }
+
+                1 -> {
+                    return if (amberValue >= 2) {
+                        "B"
+                    } else {
+                        "C"
+                    }
+                }
+
+                else -> {
+                    return if (amberValue > 3) {
+                        "B"
+                    } else {
+                        "C"
+                    }
                 }
             }
-            2 -> {
-                return "B"
-            }
-            1 -> {
-                return if (amberValue >= 2) {
-                    "B"
-                } else {
-                    "C"
-                }
-            }
-            else -> {
-                return "C"
-            }
+        } else {
+            return "?"
         }
     }
 
@@ -572,6 +606,10 @@ class BottomSheetBarcodeResult(private val fragment: ScannerFragment?) : BottomS
                             events.add(newEvent)
                             addPointerToFirestore(monthYear, events)
                         }
+                    } else {
+                        val newEvent = CalendarEvent(date, food = true, symptom = false)
+                        events.add(newEvent)
+                        addPointerToFirestore(monthYear, events)
                     }
                 }
 

@@ -14,5 +14,7 @@ data class CustomisationData(
     val sugarLow: Int = 5,
     val sugarHigh: Int = 23,
     val saltLow: Int = 1,
-    val saltHigh: Int = 2
+    val saltHigh: Int = 2,
+    val foodColour: String = "#2dc937",
+    val symptomColour: String = "#cc3232"
 )

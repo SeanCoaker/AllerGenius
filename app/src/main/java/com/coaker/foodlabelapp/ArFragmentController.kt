@@ -103,19 +103,26 @@ class ArFragmentController : Fragment() {
                     .addOnSuccessListener {
                         if (it != null && it.size > 0) {
                             for (barcode in it) {
+                                val pos = floatArrayOf(0f, 0f, -1.5f)
+                                val rot = floatArrayOf(0f, 0f, 0f, 0f)
+
                                 setupLabelData(
                                     barcode.rawValue,
                                     arFragment,
                                     arFragment.arSceneView.session!!.createAnchor(
                                         arFragment.arSceneView.arFrame!!.camera.pose.compose(
-                                            Pose.makeTranslation(
-                                                0F, 0F, -1.5f
-                                            )
+                                            Pose(pos, rot)
                                         ).extractTranslation(),
                                     )
                                 )
                             }
                         }
+
+                        image.close()
+                    }
+
+                    .addOnFailureListener {
+                        image.close()
                     }
             }
         }
@@ -179,26 +186,37 @@ class ArFragmentController : Fragment() {
                 when (foodScore) {
                     "A" -> {
                         foodScoreText.text = foodScore
+                        foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                         foodScoreText.backgroundTintList =
                             ColorStateList.valueOf(Color.parseColor(Variables.trafficLightA))
                     }
 
                     "B" -> {
                         foodScoreText.text = foodScore
+                        foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                         foodScoreText.backgroundTintList =
                             ColorStateList.valueOf(Color.parseColor(Variables.trafficLightB))
                     }
 
                     "C" -> {
                         foodScoreText.text = foodScore
+                        foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                         foodScoreText.backgroundTintList =
                             ColorStateList.valueOf(Color.parseColor(Variables.trafficLightC))
                     }
 
                     "X" -> {
                         foodScoreText.text = foodScore
+                        foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                         foodScoreText.backgroundTintList =
                             ColorStateList.valueOf(Color.parseColor(Variables.trafficLightX))
+                    }
+
+                    "?" -> {
+                        foodScoreText.text = foodScore
+                        foodScoreText.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                        foodScoreText.backgroundTintList =
+                            ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white))
                     }
                 }
 
@@ -307,6 +325,10 @@ class ArFragmentController : Fragment() {
                     }
 
                     placeLabel(fragment, anchor, productName, rawValue!!, foodScore)
+
+                } else {
+
+                    placeLabel(fragment, anchor, "Not Found", rawValue!!, "?")
                 }
 
             } catch (e: org.json.JSONException) {
@@ -336,27 +358,27 @@ class ArFragmentController : Fragment() {
         var redValue = 0
 
         when {
-            fat <= 3.0 -> greenValue++
-            fat in 3.1..17.5 -> amberValue++
-            else -> redValue++
+            fat <= Variables.fatLow -> greenValue++
+            fat > Variables.fatHigh -> redValue++
+            else -> amberValue++
         }
 
         when {
-            saturates <= 1.5 -> greenValue++
-            saturates in 1.6..5.0 -> amberValue++
-            else -> redValue++
+            saturates <= Variables.saturatesLow -> greenValue++
+            saturates > Variables.saturatesHigh -> redValue++
+            else -> amberValue++
         }
 
         when {
-            sugar <= 5.0 -> greenValue++
-            sugar in 5.1..22.5 -> amberValue++
-            else -> redValue++
+            sugar <= Variables.sugarLow -> greenValue++
+            sugar > Variables.sugarHigh -> redValue++
+            else -> amberValue++
         }
 
         when {
-            salt <= 0.3 -> greenValue++
-            salt in 0.4..1.5 -> amberValue++
-            else -> redValue++
+            salt <= Variables.saltLow -> greenValue++
+            salt > Variables.saltHigh -> redValue++
+            else -> amberValue++
         }
 
         when (greenValue) {
@@ -464,39 +486,41 @@ class ArFragmentController : Fragment() {
 
                     allergens = product!!.getString("allergens")
                     traces = product!!.getString("traces")
+
+                    bundle.putString("brand", brand)
+                    bundle.putString("product_name", productName)
+
+                    bundle.putString("servingSize", servingSize)
+                    bundle.putString("energyUnit", energyUnit)
+                    bundle.putDouble("energy100", energy100)
+                    bundle.putDouble("fat100", fat100)
+                    bundle.putDouble("saturatedFat100", saturatedFat100)
+                    bundle.putDouble("carbs100", carbs100)
+                    bundle.putDouble("sugar100", sugar100)
+                    bundle.putDouble("fibre100", fibre100)
+                    bundle.putDouble("protein100", protein100)
+                    bundle.putDouble("salt100", salt100)
+
+                    bundle.putString("ingredients", ingredients)
+                    bundle.putString("additives", additives)
+
+                    bundle.putString("allergens", allergens)
+                    bundle.putString("traces", traces)
+
+                } else {
+
+                    bundle.clear()
                 }
 
             } catch (e: org.json.JSONException) {
 
             } finally {
 
-
                 bundle.putString("productId", productId)
                 bundle.putString("displayValue", productId)
 
-                bundle.putString("brand", brand)
-                bundle.putString("product_name", productName)
-
-                bundle.putString("servingSize", servingSize)
-                bundle.putString("energyUnit", energyUnit)
-                bundle.putDouble("energy100", energy100)
-                bundle.putDouble("fat100", fat100)
-                bundle.putDouble("saturatedFat100", saturatedFat100)
-                bundle.putDouble("carbs100", carbs100)
-                bundle.putDouble("sugar100", sugar100)
-                bundle.putDouble("fibre100", fibre100)
-                bundle.putDouble("protein100", protein100)
-                bundle.putDouble("salt100", salt100)
-
-                bundle.putString("ingredients", ingredients)
-                bundle.putString("additives", additives)
-
-                bundle.putString("allergens", allergens)
-                bundle.putString("traces", traces)
-
                 bottomSheet.arguments = bundle
                 bottomSheet.show(parent.supportFragmentManager, TAG)
-
             }
         }
     }

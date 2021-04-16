@@ -16,7 +16,7 @@ import com.larswerkman.holocolorpicker.OpacityBar
 import com.larswerkman.holocolorpicker.SVBar
 
 
-class ColorPickerFragment(private val sourceId: String): DialogFragment() {
+class ColorPickerFragment(private val sourceId: String) : DialogFragment() {
 
     private lateinit var parent: MainActivity
 
@@ -59,6 +59,16 @@ class ColorPickerFragment(private val sourceId: String): DialogFragment() {
                 colorPicker.color = parseColor(Variables.trafficLightX)
                 colorPicker.oldCenterColor = parseColor(Variables.trafficLightX)
             }
+
+            "food" -> {
+                colorPicker.color = parseColor(Variables.foodColour)
+                colorPicker.oldCenterColor = parseColor(Variables.foodColour)
+            }
+
+            "symptom" -> {
+                colorPicker.color = parseColor(Variables.symptomColour)
+                colorPicker.oldCenterColor = parseColor(Variables.symptomColour)
+            }
         }
 
         colorPicker.addSVBar(svBar)
@@ -69,6 +79,7 @@ class ColorPickerFragment(private val sourceId: String): DialogFragment() {
         okButton.setOnClickListener {
             val hexColor = Integer.toHexString(colorPicker.color)
             val customiseFragment = parentFragment as CustomiseFragment
+            val calendarDayPreview = parent.findViewById<View>(R.id.calendarDayPreview)
 
             when (sourceId) {
                 "allergy" -> {
@@ -110,6 +121,24 @@ class ColorPickerFragment(private val sourceId: String): DialogFragment() {
 
                     parent.findViewById<TextView>(R.id.foodScoreX).backgroundTintList =
                         ColorStateList.valueOf(parseColor(Variables.trafficLightX))
+                }
+
+                "food" -> {
+                    Variables.foodColour = "#$hexColor"
+
+                    parent.findViewById<TextView>(R.id.foodColorButton).backgroundTintList =
+                        ColorStateList.valueOf(parseColor(Variables.foodColour))
+                    calendarDayPreview.findViewById<View>(R.id.foodNotifView).backgroundTintList =
+                        ColorStateList.valueOf(parseColor(Variables.foodColour))
+                }
+
+                "symptom" -> {
+                    Variables.symptomColour = "#$hexColor"
+
+                    parent.findViewById<TextView>(R.id.symptomColorButton).backgroundTintList =
+                        ColorStateList.valueOf(parseColor(Variables.symptomColour))
+                    calendarDayPreview.findViewById<View>(R.id.symptomNotifView).backgroundTintList =
+                        ColorStateList.valueOf(parseColor(Variables.symptomColour))
                 }
             }
 

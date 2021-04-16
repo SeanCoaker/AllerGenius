@@ -17,7 +17,7 @@
             android:layout_marginHorizontal="@dimen/card_margin_hor"
             app:contentPaddingTop="10dp"
             app:contentPaddingBottom="10dp"
-            app:cardElevation="20dp"
+            app:cardElevation="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -36,6 +36,29 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/helpButtonAllergies"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/help_button_circle"
+                    android:gravity="center"
+                    android:text="@string/help"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/helpTextAllergies"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/allergies_help"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/allergiesTitle" />
 
                 <Button
                     android:id="@+id/colorsButton"
@@ -94,7 +117,7 @@
             android:layout_marginHorizontal="@dimen/card_margin_hor"
             app:contentPaddingTop="10dp"
             app:contentPaddingBottom="10dp"
-            app:cardElevation="20dp"
+            app:cardElevation="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -122,19 +145,26 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/helpButton"
+                        android:id="@+id/helpButtonTraffic"
                         android:gravity="center"
                         android:background="@drawable/help_button_circle"
-                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginHorizontal="16dp"
                         android:layout_gravity="end"
                         android:text="@string/help"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </FrameLayout>
 
-
+                <TextView
+                    android:id="@+id/helpTextTraffic"
+                    android:visibility="gone"
+                    android:text="@string/traffic_help"
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
                 <TableLayout
+                    android:id="@+id/trafficTableLayout"
                     android:stretchColumns="0, 1, 2, 3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
@@ -211,7 +241,7 @@
             android:layout_marginHorizontal="@dimen/card_margin_hor"
             app:contentPaddingTop="10dp"
             app:contentPaddingBottom="10dp"
-            app:cardElevation="20dp"
+            app:cardElevation="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -220,21 +250,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/nutritionalTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
-                    android:text="@string/nutritional_values_title"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_gravity="center"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/nutritionalTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="@string/nutritional_values_title"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/helpButtonNutrition"
+                        android:gravity="center"
+                        android:background="@drawable/help_button_circle"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_gravity="end"
+                        android:text="@string/help"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </FrameLayout>
 
                 <TextView
+                    android:id="@+id/helpTextNutrition"
+                    android:visibility="gone"
+                    android:text="@string/nutritional_help"
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/textFat"
                     android:text="@string/bold_fat"
                     android:layout_marginStart="10dp"
                     android:layout_marginVertical="10dp"
@@ -269,6 +322,7 @@
 
 
                 <TextView
+                    android:id="@+id/textSaturates"
                     android:text="@string/bold_saturates"
                     android:layout_marginStart="10dp"
                     android:layout_marginVertical="10dp"
@@ -303,6 +357,7 @@
 
 
                 <TextView
+                    android:id="@+id/textSugar"
                     android:text="@string/bold_sugar"
                     android:layout_marginStart="10dp"
                     android:layout_marginVertical="10dp"
@@ -337,6 +392,7 @@
 
 
                 <TextView
+                    android:id="@+id/textSalt"
                     android:text="@string/bold_salt"
                     android:layout_marginStart="10dp"
                     android:layout_marginVertical="10dp"
@@ -368,6 +424,101 @@
                     android:id="@+id/highSaltSeek"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            android:layout_marginVertical="@dimen/card_margin_vert"
+            android:layout_marginHorizontal="@dimen/card_margin_hor"
+            app:contentPaddingTop="10dp"
+            app:contentPaddingBottom="10dp"
+            app:cardElevation="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/diaryTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="@string/diary_title"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.498"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/helpButtonDiary"
+                        android:gravity="center"
+                        android:background="@drawable/help_button_circle"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_gravity="end"
+                        android:text="@string/help"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:text="@string/food"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                    <Button
+                        android:id="@+id/foodColorButton"
+                        android:layout_marginEnd="10dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="end"/>
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:text="@string/symptom"
+                        android:layout_marginStart="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+
+                    <Button
+                        android:id="@+id/symptomColorButton"
+                        android:layout_marginEnd="10dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="end"/>
+
+                </FrameLayout>
+
+                <include
+                    android:id="@+id/calendarDayPreview"
+                    layout="@layout/calendar_day_layout"
+                    android:layout_gravity="center"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
 
             </LinearLayout>
 

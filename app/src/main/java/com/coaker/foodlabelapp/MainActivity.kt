@@ -96,6 +96,8 @@ class MainActivity : AppCompatActivity() {
                         Variables.sugarHigh = result.sugarHigh
                         Variables.saltLow = result.saltLow
                         Variables.saltHigh = result.saltHigh
+                        Variables.foodColour = result.foodColour
+                        Variables.symptomColour = result.symptomColour
                     }
                 }
             }

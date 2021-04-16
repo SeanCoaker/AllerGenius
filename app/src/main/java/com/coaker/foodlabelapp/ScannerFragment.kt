@@ -1,6 +1,7 @@
 package com.coaker.foodlabelapp
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.camera.core.*
@@ -19,6 +21,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.chip.Chip
 import com.google.ar.core.*
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
@@ -52,12 +55,16 @@ class ScannerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         root = inflater.inflate(R.layout.fragment_scanner, container, false)
+        scannerContext = requireContext()
 
         parent = activity as MainActivity
 
         arSwitch = root.findViewById(R.id.arSwitchCam)
 
         cameraView = root.findViewById(R.id.viewFinder)
+
+        promptChip = root.findViewById(R.id.instructionChip)
+        promptChip.text = getString(R.string.scanner_instruction)
 
         checkARAvailability()
 
@@ -169,6 +176,9 @@ class ScannerFragment : Fragment() {
         private const val TAG = "CameraXBasic"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+
+        private lateinit var promptChip: Chip
+        private lateinit var scannerContext: Context
     }
 
     override fun onRequestPermissionsResult(
@@ -230,7 +240,7 @@ class ScannerFragment : Fragment() {
                 if (status == 1) {
                     product = response!!.getJSONObject("product")
 
-//                    println(product!!.toString(5))
+                    println(product!!.toString(5))
 
                     productId = product!!.getString("id")
 
@@ -267,35 +277,37 @@ class ScannerFragment : Fragment() {
 
                     allergens = product!!.getString("allergens")
                     traces = product!!.getString("traces")
+
+                    bundle.putString("brand", brand)
+                    bundle.putString("product_name", productName)
+
+                    bundle.putString("servingSize", servingSize)
+                    bundle.putString("energyUnit", energyUnit)
+                    bundle.putDouble("energy100", energy100)
+                    bundle.putDouble("fat100", fat100)
+                    bundle.putDouble("saturatedFat100", saturatedFat100)
+                    bundle.putDouble("carbs100", carbs100)
+                    bundle.putDouble("sugar100", sugar100)
+                    bundle.putDouble("fibre100", fibre100)
+                    bundle.putDouble("protein100", protein100)
+                    bundle.putDouble("salt100", salt100)
+
+                    bundle.putString("ingredients", ingredients)
+                    bundle.putString("additives", additives)
+
+                    bundle.putString("allergens", allergens)
+                    bundle.putString("traces", traces)
+                } else {
+
+                    bundle.clear()
                 }
 
             } catch (e: org.json.JSONException) {
 
             } finally {
 
-
                 bundle.putString("productId", productId)
                 bundle.putString("displayValue", displayValue)
-
-                bundle.putString("brand", brand)
-                bundle.putString("product_name", productName)
-
-                bundle.putString("servingSize", servingSize)
-                bundle.putString("energyUnit", energyUnit)
-                bundle.putDouble("energy100", energy100)
-                bundle.putDouble("fat100", fat100)
-                bundle.putDouble("saturatedFat100", saturatedFat100)
-                bundle.putDouble("carbs100", carbs100)
-                bundle.putDouble("sugar100", sugar100)
-                bundle.putDouble("fibre100", fibre100)
-                bundle.putDouble("protein100", protein100)
-                bundle.putDouble("salt100", salt100)
-
-                bundle.putString("ingredients", ingredients)
-                bundle.putString("additives", additives)
-
-                bundle.putString("allergens", allergens)
-                bundle.putString("traces", traces)
 
                 bottomSheet.arguments = bundle
                 bottomSheet.show(parent.supportFragmentManager, TAG)
@@ -341,14 +353,21 @@ class ScannerFragment : Fragment() {
                 scanner.process(image)
                     .addOnSuccessListener { barcodes ->
 
-                        for (barcode in barcodes) {
-                            val rawValue = barcode.rawValue
-                            val displayValue = barcode.displayValue
+                        if (barcodes.size > 1) {
+                            promptChip.text = scannerContext.getString(R.string.multi_barcode_error)
+                        } else {
+                            for (barcode in barcodes) {
+                                val rawValue = barcode.rawValue
+                                val displayValue = barcode.displayValue
 
-                            listener(rawValue!!, displayValue!!)
+                                listener(rawValue!!, displayValue!!)
 
-                            imageProxy.close()
+                                imageProxy.close()
+
+                                promptChip.text = scannerContext.getString(R.string.scanner_instruction)
+                            }
                         }
+
                     }
 
                     .addOnFailureListener {

@@ -61,8 +61,6 @@ class EmailLoginActivity : AppCompatActivity(), View.OnClickListener {
         registerTextView.setOnClickListener(this)
         registerButton.setOnClickListener(this)
 
-
-
         registerButton.visibility = View.GONE
         nameTextInputLayout.visibility = View.GONE
         confirmPasswordTextInputLayout.visibility = View.GONE

@@ -11,6 +11,9 @@ object Variables {
     var allergyColour = "#FF0000"
     var allergyBIU = "NIL"
 
+    var foodColour = "#2dc937"
+    var symptomColour = "#cc3232"
+
     var trafficLightA = "#2dc937"
     var trafficLightB = "#e7b416"
     var trafficLightC = "#cc3232"

@@ -160,25 +160,28 @@ class AddFoodDialogFragment(private val date: String, private val food: FoodDiar
         val db = FirebaseFirestore.getInstance()
         val users = db.collection("users")
 
-        var exists = false
-
         users.document(Firebase.auth.uid.toString()).collection("events").document("foods")
             .collection("months").document(monthYear).collection("days")
             .document(day.toInt().toString()).get().addOnSuccessListener {
-                exists = it.exists()
+                if (it.exists()) {
+                    users.document(Firebase.auth.uid.toString()).collection("events").document("foods")
+                        .collection("months").document(monthYear).collection("days")
+                        .document(day.toInt().toString()).update("foods", FieldValue.arrayUnion(food))
+                } else {
+                    val tempArrayObj = ArrayList<FoodDiaryItem>()
+                    tempArrayObj.add(food)
+
+                    users.document(Firebase.auth.uid.toString()).collection("events").document("foods")
+                        .collection("months").document(monthYear).collection("days")
+                        .document(day.toInt().toString()).set(mapOf("foods" to tempArrayObj))
+                }
+            }.addOnFailureListener {
+                val tempArrayObj = ArrayList<FoodDiaryItem>()
+                tempArrayObj.add(food)
+
+                users.document(Firebase.auth.uid.toString()).collection("events").document("foods")
+                    .collection("months").document(monthYear).collection("days")
+                    .document(day.toInt().toString()).set(mapOf("foods" to tempArrayObj))
             }
-
-        if (exists) {
-            users.document(Firebase.auth.uid.toString()).collection("events").document("foods")
-                .collection("months").document(monthYear).collection("days")
-                .document(day.toInt().toString()).update("foods", FieldValue.arrayUnion(food))
-        } else {
-            val tempArrayObj = ArrayList<FoodDiaryItem>()
-            tempArrayObj.add(food)
-
-            users.document(Firebase.auth.uid.toString()).collection("events").document("foods")
-                .collection("months").document(monthYear).collection("days")
-                .document(day.toInt().toString()).set(mapOf("foods" to tempArrayObj))
-        }
     }
 }

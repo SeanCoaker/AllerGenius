@@ -21,4 +21,7 @@
     <color name="peach">#d8b9c3</color>
 
     <color name="grey">#d0d4d4</color>
+
+    <color name="dark">#9A000000</color>
+    <color name="transparent">#00000000</color>
 </resources>

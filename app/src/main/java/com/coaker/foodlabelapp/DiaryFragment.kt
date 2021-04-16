@@ -3,6 +3,8 @@ package com.coaker.foodlabelapp
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
@@ -202,7 +204,11 @@ class DiaryFragment : Fragment() {
 
                             if (eventPointers.contains(day.date)) {
                                 foodNotifView.isVisible = eventPointers[day.date]!!.food
+                                foodNotifView.backgroundTintList =
+                                    ColorStateList.valueOf(Color.parseColor(Variables.foodColour))
                                 symptomNotifView.isVisible = eventPointers[day.date]!!.symptom
+                                symptomNotifView.backgroundTintList =
+                                    ColorStateList.valueOf(Color.parseColor(Variables.symptomColour))
 
                                 if (foodNotifView.isVisible && symptomNotifView.isVisible) {
                                     eventsSpacer.visibility = View.VISIBLE
@@ -229,7 +235,6 @@ class DiaryFragment : Fragment() {
 
         calendarView.monthScrollListener = {
             activity?.title = dateFormatMonth.format(it.yearMonth)
-            selectDate(it.yearMonth.atDay(1));
             loadMonthEventsFromFirestore(dateFormatMonth.format(it.yearMonth))
         }
 

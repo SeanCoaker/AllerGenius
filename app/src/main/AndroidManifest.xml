@@ -4,6 +4,7 @@
 
     <!-- Makes sure device has a camera and allows the camera to be the front or back camera  -->
     <uses-feature android:name="android.hardware.camera.any" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -14,17 +15,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodLabelApp">
-        <meta-data android:name="com.google.ar.core" android:value="optional" />
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="optional" />
 
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.FoodLabelApp" >
+            android:theme="@style/Theme.FoodLabelApp" />
+
+        <activity
+            android:name=".EmailLoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".SplashScreenActivity"
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,10 +44,6 @@
             </intent-filter>
 
         </activity>
-
-        <activity
-            android:name=".EmailLoginActivity"
-            android:screenOrientation="portrait" />
 
     </application>
 

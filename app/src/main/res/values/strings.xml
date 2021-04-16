@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Food Label App</string>
+    <string name="app_name">AllerGenius</string>
     <string name="scan_barcode">Scan Barcode</string>
 
     <string name="product_id">Product ID</string>
@@ -74,6 +74,7 @@
     <string name="scan">Scan</string>
     <string name="x">X</string>
     <string name="help">\?</string>
+    <string name="clear">x</string>
     <string name="nutritional_values_title"><u>Nutritional Values</u></string>
     <string name="bold_fat"><b>Fat</b></string>
     <string name="low">Low</string>
@@ -81,5 +82,13 @@
     <string name="bold_saturates"><b>Saturates</b></string>
     <string name="bold_sugar"><b>Sugar</b></string>
     <string name="bold_salt"><b>Salt</b></string>
+    <string name="allergenius_warning">Avoid using this application solely if you suffer from life threatening allergic conditions such as Anaphylaxis.</string>
+    <string name="traffic_help">Tap the circle of each food score to change the colour of the circle surrounding them.</string>
+    <string name="nutritional_help">Adjust the sliders of each nutritional value to set the low and high values to suit your needs.</string>
+    <string name="allergies_help">Set the colour used to highlight allergens and whether they should be underline, italic and/or bold. A preview can be seen of allergens in ingredients.</string>
+    <string name="scanner_instruction">Hover over barcode</string>
+    <string name="multi_barcode_error">Please scan 1 barcode at a time</string>
+    <string name="diary_title"><u>Diary Title</u></string>
+    <string name="day_example">22</string>
 
 </resources>
