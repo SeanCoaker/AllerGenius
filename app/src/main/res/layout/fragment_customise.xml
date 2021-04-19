@@ -473,7 +473,16 @@
                         android:layout_height="wrap_content" />
                 </FrameLayout>
 
+                <TextView
+                    android:id="@+id/helpTextDiary"
+                    android:visibility="gone"
+                    android:text="@string/diary_help"
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
                 <FrameLayout
+                    android:id="@+id/diaryFoodCustomiseFrame"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -494,6 +503,7 @@
                 </FrameLayout>
 
                 <FrameLayout
+                    android:id="@+id/diarySymptomCustomiseFrame"
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">

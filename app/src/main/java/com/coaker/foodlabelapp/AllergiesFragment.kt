@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
@@ -58,11 +59,26 @@ class AllergiesFragment : Fragment() {
     private fun populateAllergyList() {
         val allergyText = parent.findViewById<TextInputEditText>(R.id.editTextAllergies).text
         val allergies = allergyText!!.split(",")
+        var alreadyExists = false
 
         if (allergies.first() != "") {
             allergies.forEach {
-                Variables.allergyList.add(it)
+                if (Variables.allergyList.stream().noneMatch { s ->
+                        s.equals(it, true)
+                    }) {
+                    Variables.allergyList.add(it)
+                } else {
+                    alreadyExists = true
+                }
             }
+        }
+
+        if (alreadyExists) {
+            Snackbar.make(
+                requireView(),
+                "One or more allergies already exist in this list",
+                Snackbar.LENGTH_LONG
+            ).show()
         }
 
         updateFirestore()

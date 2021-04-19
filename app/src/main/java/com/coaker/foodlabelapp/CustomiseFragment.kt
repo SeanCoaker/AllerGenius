@@ -7,11 +7,8 @@ import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.SeekBar
+import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.TableLayout
-import android.widget.TextView
 import androidx.core.text.bold
 import androidx.core.text.color
 import androidx.core.text.italic
@@ -176,6 +173,7 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         val helpButtonAllergies: TextView = root.findViewById(R.id.helpButtonAllergies)
         val helpButtonTraffic: TextView = root.findViewById(R.id.helpButtonTraffic)
         val helpButtonNutrition: TextView = root.findViewById(R.id.helpButtonNutrition)
+        val helpButtonDiary: TextView = root.findViewById(R.id.helpButtonDiary)
 
         helpButtonAllergies.setOnClickListener {
             val helpText: TextView = root.findViewById(R.id.helpTextAllergies)
@@ -276,6 +274,27 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
                 highSugarSeek.visibility = View.GONE
                 lowSaltSeek.visibility = View.GONE
                 highSaltSeek.visibility = View.GONE
+            }
+        }
+
+        helpButtonDiary.setOnClickListener {
+            val helpText: TextView = root.findViewById(R.id.helpTextDiary)
+            val diaryFoodCustomiseFrame: FrameLayout = root.findViewById(R.id.diaryFoodCustomiseFrame)
+            val diarySymptomCustomiseFrame: FrameLayout = root.findViewById(R.id.diarySymptomCustomiseFrame)
+            val dayPreview: View = root.findViewById(R.id.calendarDayPreview)
+
+            if (helpText.isVisible) {
+                helpButtonDiary.text = resources.getString(R.string.help)
+                helpText.visibility = View.GONE
+                diarySymptomCustomiseFrame.visibility = View.VISIBLE
+                diaryFoodCustomiseFrame.visibility = View.VISIBLE
+                dayPreview.visibility = View.VISIBLE
+            } else {
+                helpButtonDiary.text = resources.getString(R.string.x)
+                helpText.visibility = View.VISIBLE
+                diaryFoodCustomiseFrame.visibility = View.GONE
+                diarySymptomCustomiseFrame.visibility = View.GONE
+                dayPreview.visibility = View.GONE
             }
         }
     }

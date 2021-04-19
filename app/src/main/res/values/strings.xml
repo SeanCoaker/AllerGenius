@@ -88,7 +88,8 @@
     <string name="allergies_help">Set the colour used to highlight allergens and whether they should be underline, italic and/or bold. A preview can be seen of allergens in ingredients.</string>
     <string name="scanner_instruction">Hover over barcode</string>
     <string name="multi_barcode_error">Please scan 1 barcode at a time</string>
-    <string name="diary_title"><u>Diary Title</u></string>
+    <string name="diary_title"><u>Diary</u></string>
     <string name="day_example">22</string>
+    <string name="diary_help">Set the colours to be used to represent food and symptom entries on days of the calendar within your diary.</string>
 
 </resources>

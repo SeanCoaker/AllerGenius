@@ -34,6 +34,9 @@ class ColorPickerFragment(private val sourceId: String) : DialogFragment() {
         val svBar = root.findViewById<SVBar>(R.id.svbar)
         val opacityBar = root.findViewById<OpacityBar>(R.id.opacitybar)
 
+        colorPicker.addSVBar(svBar)
+        colorPicker.addOpacityBar(opacityBar)
+
         when (sourceId) {
             "allergy" -> {
                 colorPicker.color = parseColor(Variables.allergyColour)
@@ -70,9 +73,6 @@ class ColorPickerFragment(private val sourceId: String) : DialogFragment() {
                 colorPicker.oldCenterColor = parseColor(Variables.symptomColour)
             }
         }
-
-        colorPicker.addSVBar(svBar)
-        colorPicker.addOpacityBar(opacityBar)
 
         val okButton = root.findViewById<Button>(R.id.okButton)
 
