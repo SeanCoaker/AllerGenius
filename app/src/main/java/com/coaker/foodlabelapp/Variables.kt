@@ -1,10 +1,7 @@
 package com.coaker.foodlabelapp
 
-import android.graphics.Color
-
-
 /**
- * Static variables that are associated with the whole app.
+ * Static variables that are associated and used globally across the app
  */
 object Variables {
     var allergyList = ArrayList<String>()
@@ -31,5 +28,5 @@ object Variables {
     var saltLow = 1
     var saltHigh = 2
 
-    var arAvailable = false
+    var isConnected = false
 }

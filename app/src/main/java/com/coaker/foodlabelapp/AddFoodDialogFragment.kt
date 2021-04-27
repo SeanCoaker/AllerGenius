@@ -25,11 +25,31 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
+/**
+ * A class that handles the displaying of the window that allows the user to add foods
+ * to their diary.
+ *
+ * @param[date] Either today's date or the date to add the food too in the diary.
+ * @param[food] The food to be saved to the diary.
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 class AddFoodDialogFragment(private val date: String, private val food: FoodDiaryItem?) :
     DialogFragment() {
 
+    // Format to be used to save dates in Firestore
     private val dateFormatMonth = DateTimeFormatter.ofPattern("MMMM - yyyy")
 
+    /**
+     * A function that is called when the fragment is created.
+     * 
+     * @param[inflater] Inflater used to inflate the layout in this fragment.
+     * @param[container] Contains the content of the fragment.
+     * @param[savedInstanceState] Any previous saved instance of the fragment.
+     *
+     * @return[View] The view that has been created.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,6 +69,7 @@ class AddFoodDialogFragment(private val date: String, private val food: FoodDiar
 
         val dateSplit = date.split("-")
 
+        // Handles code depending on where the add food was called from, diary or barcode scanner.
         if (targetRequestCode == 2001) {
 
             datePicker.visibility = View.GONE
@@ -62,6 +83,7 @@ class AddFoodDialogFragment(private val date: String, private val food: FoodDiar
             val year = dateSplit[0].toInt()
             val month = dateSplit[1].toInt()
 
+            // Sets the date to be displayed in date picker.
             datePicker.updateDate(year, month, dateSplit[2].toInt())
             datePicker.maxDate = System.currentTimeMillis()
             val twelveMonthsAgo = Calendar.getInstance()
@@ -105,11 +127,6 @@ class AddFoodDialogFragment(private val date: String, private val food: FoodDiar
                 ingredientsEditText.error = "This field cannot be blank"
             }
 
-            if (TextUtils.isEmpty(tracesEditText.text)) {
-                editTextError = true
-                tracesEditText.error = "This field cannot be blank"
-            }
-
             if (editTextError) {
                 val snackbar =
                     Snackbar.make(it, "One or more entries are empty", Snackbar.LENGTH_LONG)
@@ -119,6 +136,7 @@ class AddFoodDialogFragment(private val date: String, private val food: FoodDiar
                 val enteredDate: String
                 val day: String
 
+                // Sets up the date based on where this class was called from.
                 if (targetRequestCode == 2001) {
                     enteredDate = date
                     day = dateSplit[2].toInt().toString()
@@ -133,6 +151,7 @@ class AddFoodDialogFragment(private val date: String, private val food: FoodDiar
                     tracesEditText.text.toString(), quantityEditText.text.toString()
                 )
 
+                // Code used to set the date to be able to add a pointer in the diary when the fragment is closed.
                 val newDate = LocalDate.parse(enteredDate)
                 saveFood(dateFormatMonth.format(newDate), day, food)
                 val intent = Intent()
@@ -148,13 +167,25 @@ class AddFoodDialogFragment(private val date: String, private val food: FoodDiar
     }
 
 
+    /**
+     * A function that is called when this fragment is resumed from a paused state.
+     */
     override fun onResume() {
         super.onResume()
 
+        // Sets the size of the dialog fragment.
         dialog!!.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
 
+    /**
+     * A function that is developed to save the food item to the diary in the Firestore database.
+     * 
+     * @param[monthYear] The month and year to have a document created for in Firestore in the
+     *                   format mmmm - YYYY
+     * @param[day] The day to have a document created for in Firestore.
+     * @param[food] The food item to be saved.
+     */
     private fun saveFood(monthYear: String, day: String, food: FoodDiaryItem) {
 
         val db = FirebaseFirestore.getInstance()

@@ -15,11 +15,27 @@ import com.larswerkman.holocolorpicker.ColorPicker
 import com.larswerkman.holocolorpicker.OpacityBar
 import com.larswerkman.holocolorpicker.SVBar
 
-
+/**
+ * A class built to handle colour picking to allow the user to customise the appearance of some
+ * features in the application. The library used can be found here https://github.com/LarsWerkman/HoloColorPicker
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 class ColorPickerFragment(private val sourceId: String) : DialogFragment() {
 
     private lateinit var parent: MainActivity
 
+
+    /**
+     * A function that is called when the fragment is created.
+     *
+     * @param[inflater] Inflater used to inflate the layout in this fragment.
+     * @param[container] Contains the content of the fragment.
+     * @param[savedInstanceState] Any previous saved instance of the fragment.
+     *
+     * @return[View] The view that has been created.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,6 +53,7 @@ class ColorPickerFragment(private val sourceId: String) : DialogFragment() {
         colorPicker.addSVBar(svBar)
         colorPicker.addOpacityBar(opacityBar)
 
+        // Sets up the old colour for reference based on where the dialog was called from
         when (sourceId) {
             "allergy" -> {
                 colorPicker.color = parseColor(Variables.allergyColour)
@@ -81,6 +98,7 @@ class ColorPickerFragment(private val sourceId: String) : DialogFragment() {
             val customiseFragment = parentFragment as CustomiseFragment
             val calendarDayPreview = parent.findViewById<View>(R.id.calendarDayPreview)
 
+            // Sets the colour of a variable depending on where the dialog was called from
             when (sourceId) {
                 "allergy" -> {
                     Variables.allergyColour = "#$hexColor"

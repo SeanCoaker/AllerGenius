@@ -17,15 +17,19 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.ar.core.ArCoreApk
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
-
-//typealias ValueListener = (rawValue: String, displayValue: String) -> Unit
-
+/**
+ * A class used to handle the main features of the application
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 class MainActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
@@ -35,6 +39,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var navView: NavigationView
 
+
+    /**
+     * A method called when the activity is being created. This method sets up the navigation aspects
+     * of the app and loads the user's customisation saved data.
+     *
+     * @param[savedInstanceState] Any previous saved instance of the activity.
+     */
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,41 +75,39 @@ class MainActivity : AppCompatActivity() {
         val user = Firebase.auth.currentUser
 
         val docRef = db.collection("users").document(user!!.uid)
-        docRef.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
+        docRef.get().addOnSuccessListener {
 
-                val dataCollection = docRef.collection("data")
+            val dataCollection = docRef.collection("data")
 
-                val allergiesDoc = dataCollection.document("allergies")
-                allergiesDoc.get().addOnSuccessListener { allergiesDocSnapshot ->
-                    if (allergiesDocSnapshot.exists()) {
-                        val result = allergiesDocSnapshot.toObject(UserData::class.java)
-                        Variables.allergyList = result!!.allergies!!
-                    }
+            val allergiesDoc = dataCollection.document("allergies")
+            allergiesDoc.get().addOnSuccessListener { allergiesDocSnapshot ->
+                if (allergiesDocSnapshot.exists()) {
+                    val result = allergiesDocSnapshot.toObject(UserData::class.java)
+                    Variables.allergyList = result!!.allergies!!
                 }
+            }
 
-                val customisationDoc = dataCollection.document("customisation")
-                customisationDoc.get().addOnSuccessListener { customisationDocSnapshot ->
-                    if (customisationDocSnapshot.exists()) {
-                        val result =
-                            customisationDocSnapshot.toObject(CustomisationData::class.java)
-                        Variables.allergyColour = result!!.allergyColour
-                        Variables.allergyBIU = result.allergyBIU
-                        Variables.trafficLightA = result.trafficLightA
-                        Variables.trafficLightB = result.trafficLightB
-                        Variables.trafficLightC = result.trafficLightC
-                        Variables.trafficLightX = result.trafficLightX
-                        Variables.fatLow = result.fatLow
-                        Variables.fatHigh = result.fatHigh
-                        Variables.saturatesLow = result.saturatesLow
-                        Variables.saturatesHigh = result.saturatesHigh
-                        Variables.sugarLow = result.sugarLow
-                        Variables.sugarHigh = result.sugarHigh
-                        Variables.saltLow = result.saltLow
-                        Variables.saltHigh = result.saltHigh
-                        Variables.foodColour = result.foodColour
-                        Variables.symptomColour = result.symptomColour
-                    }
+            val customisationDoc = dataCollection.document("customisation")
+            customisationDoc.get().addOnSuccessListener { customisationDocSnapshot ->
+                if (customisationDocSnapshot.exists()) {
+                    val result =
+                        customisationDocSnapshot.toObject(CustomisationData::class.java)
+                    Variables.allergyColour = result!!.allergyColour
+                    Variables.allergyBIU = result.allergyBIU
+                    Variables.trafficLightA = result.trafficLightA
+                    Variables.trafficLightB = result.trafficLightB
+                    Variables.trafficLightC = result.trafficLightC
+                    Variables.trafficLightX = result.trafficLightX
+                    Variables.fatLow = result.fatLow
+                    Variables.fatHigh = result.fatHigh
+                    Variables.saturatesLow = result.saturatesLow
+                    Variables.saturatesHigh = result.saturatesHigh
+                    Variables.sugarLow = result.sugarLow
+                    Variables.sugarHigh = result.sugarHigh
+                    Variables.saltLow = result.saltLow
+                    Variables.saltHigh = result.saltHigh
+                    Variables.foodColour = result.foodColour
+                    Variables.symptomColour = result.symptomColour
                 }
             }
         }.addOnFailureListener {
@@ -112,6 +121,11 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * A function created to handle the user selecting different windows of the application.
+     *
+     * @param[item] An item signalling which window the user wants to switch to.
+     */
     private fun selectDrawerItem(item: MenuItem) {
 
         when (item.itemId) {
@@ -145,11 +159,27 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        // Displays error message upon switching screens if the device is not connected to network
+        if (!Variables.isConnected) {
+            Snackbar.make(
+                findViewById(android.R.id.content),
+                R.string.network_connection_error,
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+
         item.isChecked = true
         title = item.title
         drawer.closeDrawers()
     }
 
+
+    /**
+     * A function called to handle what happens when the hamburger button is pressed.
+     *
+     * @param[item] The item clicked
+     * @return[Boolean] The return of super.onOptionsItemSelected(item)
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> drawer.openDrawer(GravityCompat.START)
@@ -158,6 +188,10 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+
+    /**
+     * A function called to log the user out of Firebase
+     */
     private fun logout() {
         FirebaseAuth.getInstance().signOut()
         val logoutIntent = Intent(this, LoginActivity::class.java)
@@ -166,6 +200,14 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+
+    /**
+     * A function called to setup the options menu when it is created. In this instance, the user's
+     * name and email are displayed to confirm their identity.
+     *
+     * @param[menu] The menu to edit.
+     * @return[Boolean] The return of super.onCreateOptionsMenu(menu)
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val user = Firebase.auth.currentUser
 
@@ -176,6 +218,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * A function called to switch from normal barcode scanning to AR barcode scanning.
+     */
     fun switchToArFragment() {
         val arFragment = ArFragmentController()
         supportFragmentManager.beginTransaction().replace(R.id.flContent, arFragment)
@@ -183,6 +228,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * A function called to switch from AR barcode scanning to normal barcode scanning.
+     */
     fun switchToCamFragment() {
         val scannerFragment = ScannerFragment()
         supportFragmentManager.beginTransaction().replace(R.id.flContent, scannerFragment)

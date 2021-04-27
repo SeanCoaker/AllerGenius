@@ -17,7 +17,7 @@ import com.google.firebase.ktx.Firebase
 /**
  * an activity class to handle the user logging in with Facebook or Google.
  *
- * @author Sean Coaker (986529)
+ * @author Sean Coaker
  * @since 1.0
  */
 class LoginActivity : AppCompatActivity(), View.OnClickListener {

@@ -41,7 +41,13 @@ import java.time.temporal.WeekFields
 import java.util.*
 import kotlin.collections.ArrayList
 
-
+/**
+ * A class used to handle how the diary feature in the application operates. The calendar view was
+ * built using the calendar view library here https://github.com/kizitonwose/CalendarView.
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 class DiaryFragment : Fragment() {
 
     private lateinit var calendarView: CalendarView
@@ -74,6 +80,16 @@ class DiaryFragment : Fragment() {
     private val user = Firebase.auth.currentUser
     private val db = FirebaseFirestore.getInstance()
 
+
+    /**
+     * A function that is called when the fragment is created.
+     *
+     * @param[inflater] Inflater used to inflate the layout in this fragment.
+     * @param[container] Contains the content of the fragment.
+     * @param[savedInstanceState] Any previous saved instance of the fragment.
+     *
+     * @return[View] The view that has been created.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -93,19 +109,17 @@ class DiaryFragment : Fragment() {
         symptomsSubmitButton = root.findViewById(R.id.symptomsSubmitButton)
         addFoodFab = root.findViewById(R.id.addFoodFab)
 
-
         addFoodFab.setOnClickListener {
             val dialog = AddFoodDialogFragment(firestoreDayFormat.format(selectedDate), null)
             dialog.setTargetFragment(this, ADD_FOOD_REQUEST_CODE)
             dialog.show(parentFragmentManager, "Add Food")
         }
 
-
         symptomsSubmitButton.setOnClickListener {
             saveSymptoms(dateFormatMonth.format(selectedDate), dayFormat.format(selectedDate), firestoreDayFormat.format(selectedDate))
         }
 
-
+        // Switches layouts when the user taps either the food or symptom tab in each day
         tabLayoutFoodSymptom.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
 
@@ -136,6 +150,7 @@ class DiaryFragment : Fragment() {
 
         })
 
+        // Sets the range of months to be shown
         val currentMonth = YearMonth.now()
         val firstMonth = currentMonth.minusMonths(11)
         val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
@@ -144,9 +159,13 @@ class DiaryFragment : Fragment() {
 
         foodsRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        // Sets the adapter for the food list of each day
         adapter = FoodsAdapter(this, foodsArray)
         foodsRecyclerView.adapter = adapter
 
+        /**
+         * An inner class used to setup each day container of the calendar view
+         */
         class DayViewContainer(view: View) : ViewContainer(view) {
             lateinit var day: CalendarDay
             val textView = view.findViewById<TextView>(R.id.calendarDayText)
@@ -180,6 +199,7 @@ class DiaryFragment : Fragment() {
                 if (day.owner == DayOwner.THIS_MONTH) {
                     container.textView.visibility = View.VISIBLE
 
+                    // Sets the appearance of a day depending on what type of day it is.
                     when (day.date) {
 
                         today -> {
@@ -233,11 +253,15 @@ class DiaryFragment : Fragment() {
             }
         }
 
+        // Updates fragment title and reads from firestore when month is changed by user
         calendarView.monthScrollListener = {
             activity?.title = dateFormatMonth.format(it.yearMonth)
             loadMonthEventsFromFirestore(dateFormatMonth.format(it.yearMonth))
         }
 
+        /**
+         * An inner class used to setup a layout to handle the month view.
+         */
         class MonthViewContainer(view: View) : ViewContainer(view) {
             val parentLayout = view.findViewById<ViewGroup>(R.id.dayLinearLayout)
         }
@@ -247,6 +271,7 @@ class DiaryFragment : Fragment() {
 
             override fun bind(container: MonthViewContainer, month: CalendarMonth) {
 
+                // Updates the date displayed in the textbox at the base of the calendar view
                 if (container.parentLayout.tag == null) {
                     container.parentLayout.tag = month.yearMonth
                     container.parentLayout.children.map { it as TextView }
@@ -265,13 +290,22 @@ class DiaryFragment : Fragment() {
     }
 
 
+    /**
+     * A function used when the fragment is resumed from a paused state.
+     */
     override fun onResume() {
         super.onResume()
 
+        // Selects today's date automatically
         selectDate(today)
     }
 
 
+    /**
+     * Function used to change the selected date in the calendar view.
+     *
+     * @param[date] The date to change to
+     */
     private fun selectDate(date: LocalDate) {
         if (selectedDate != date) {
             val oldDate = selectedDate
@@ -285,6 +319,13 @@ class DiaryFragment : Fragment() {
         }
     }
 
+
+    /**
+     * A function used to import records of foods and symptoms for the selected date
+     *
+     * @param[monthYear] The month and year to read from
+     * @param[day] The day to be read from
+     */
     private fun loadDiaryRecords(monthYear: String, day: String) {
         foodsArray.clear()
 
@@ -293,10 +334,11 @@ class DiaryFragment : Fragment() {
         symptomsSubmitButton.visibility = View.GONE
 
         val docRef = db.collection("users").document(user!!.uid)
-        docRef.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
 
-                val eventsCollection = docRef.collection("events")
+        // Loads food records
+        docRef.get().addOnSuccessListener {
+
+            val eventsCollection = docRef.collection("events")
 
                 val foodsDocument = eventsCollection
                     .document("foods")
@@ -316,13 +358,12 @@ class DiaryFragment : Fragment() {
                     }
                 }
 
-            }
         }.addOnFailureListener {
             Log.i("Firestore Read: ", "Failed")
         }
 
-        docRef.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
+        // Loads symptom records
+        docRef.get().addOnSuccessListener {
 
                 val eventsCollection = docRef.collection("events")
 
@@ -351,18 +392,21 @@ class DiaryFragment : Fragment() {
                     currentSymptomsText = symptomsEditText.text.toString()
                 }
 
-            }
         }.addOnFailureListener {
             Log.i("Firestore Read: ", "Failed")
         }
     }
 
 
+    /**
+     * A function used to load event pointers for the month being viewed
+     *
+     * @param[monthYear] The month and year to read data from
+     */
     private fun loadMonthEventsFromFirestore(monthYear: String) {
 
         val docRef = db.collection("users").document(user!!.uid)
-        docRef.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
+        docRef.get().addOnSuccessListener {
 
                 val eventsCollection = docRef.collection("events")
 
@@ -381,7 +425,6 @@ class DiaryFragment : Fragment() {
                     }
                 }
 
-            }
         }.addOnFailureListener {
             Log.i("Firestore Read: ", "Failed")
             val snackbar =
@@ -391,6 +434,9 @@ class DiaryFragment : Fragment() {
     }
 
 
+    /**
+     * A function used to add the event pointers read from firestore into the calendar view.
+     */
     private fun setupMonthEntries() {
 
         events.forEach {
@@ -401,6 +447,12 @@ class DiaryFragment : Fragment() {
     }
 
 
+    /**
+     * A function used to setup days of the week from the users locale. This method can be found here
+     * https://github.com/kizitonwose/CalendarView.
+     *
+     * @return[Array<DayOfWeek>] An array of the days of the week
+     */
     private fun daysOfWeekFromLocale(): Array<DayOfWeek> {
         val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
         var daysOfWeek = DayOfWeek.values()
@@ -415,8 +467,16 @@ class DiaryFragment : Fragment() {
     }
 
 
+    /**
+     * A function used to save a new symptom record to Firestore
+     *
+     * @param[monthYear] The month and year to save the data in
+     * @param[day] The day to save the data in
+     * @param[date] The full date to save the data in
+     */
     private fun saveSymptoms(monthYear: String, day: String, date: String) {
 
+        // Checks to see if the symptoms have been edited before it overwrites old data.
         if (symptomsEditText.text.toString() != currentSymptomsText) {
             val db = FirebaseFirestore.getInstance()
             val users = db.collection("users")
@@ -430,6 +490,7 @@ class DiaryFragment : Fragment() {
 
             var exists = false
 
+            // Checks to see if an event exists already for the current date and adds a symptom pointer if it exists
             events.forEach {
                 if (it.day == date) {
                     it.symptom = true
@@ -438,6 +499,7 @@ class DiaryFragment : Fragment() {
                 }
             }
 
+            // Creates a new event if the event doesn't exist already for this date.
             if (!exists) {
                 val newEvent = CalendarEvent(date, food = false, symptom = true)
                 events.add(newEvent)
@@ -447,9 +509,16 @@ class DiaryFragment : Fragment() {
     }
 
 
+    /**
+     * A function used to add a food pointer to the list of events that already exists
+     *
+     * @param[monthYear] The month and year to save the pointer to
+     * @param[date] The full date to save the pointer to
+     */
     private fun addFoodPointer(monthYear: String, date: String) {
         var exists = false
 
+        // Checks to see if an event exists already for the current date and adds a food pointer if it exists
         events.forEach {
             if (it.day == date) {
                 it.food = true
@@ -458,6 +527,7 @@ class DiaryFragment : Fragment() {
             }
         }
 
+        // Creates a new event if the event doesn't exist already for this date.
         if (!exists) {
             val newEvent = CalendarEvent(date, food = true, symptom = false)
             events.add(newEvent)
@@ -466,6 +536,11 @@ class DiaryFragment : Fragment() {
     }
 
 
+    /**
+     * A function used to add all event pointers to the Firestore database
+     *
+     * @param[monthYear] The month and year to store the pointers to
+     */
     private fun addPointerToFirestore(monthYear: String) {
         val db = FirebaseFirestore.getInstance()
         val users = db.collection("users")
@@ -475,6 +550,13 @@ class DiaryFragment : Fragment() {
     }
 
 
+    /**
+     * A function used to handle data when the user returns from adding a food item dialog.
+     *
+     * @param[requestCode] The request code sent to the add food dialog
+     * @param[resultCode] The code returned from the add food dialog
+     * @param[data] The data returned from the add food dialog
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 

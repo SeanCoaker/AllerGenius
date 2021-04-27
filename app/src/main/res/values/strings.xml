@@ -91,5 +91,7 @@
     <string name="diary_title"><u>Diary</u></string>
     <string name="day_example">22</string>
     <string name="diary_help">Set the colours to be used to represent food and symptom entries on days of the calendar within your diary.</string>
+    <string name="product_not_found">Product Not Found</string>
+    <string name="network_connection_error">Network Connection Error</string>
 
 </resources>

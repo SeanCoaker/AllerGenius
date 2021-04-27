@@ -40,7 +40,7 @@ class AllergyAdapter(
         override fun onClick(v: View) {
             when (v.id) {
                 R.id.crossButton -> {
-                    removeItem(adapterPosition)
+                    removeItem(absoluteAdapterPosition)
                 }
             }
         }
@@ -48,7 +48,7 @@ class AllergyAdapter(
 
 
     /**
-     * A method that inflates the article preview layout as the view of each recycler view item.
+     * A function that inflates the article preview layout as the view of each recycler view item.
      *
      * @param[parent] The parent of the view as a ViewGroup
      * @param[viewType] The view type of the view as an int
@@ -67,7 +67,7 @@ class AllergyAdapter(
 
 
     /**
-     * A method that sets the values to be displayed in each view included in the recycler view.
+     * A function that sets the values to be displayed in each view included in the recycler view.
      *
      * @param[holder] The view holder to be configured.
      * @param[position] The position of the view holder in the recycler view.
@@ -90,7 +90,7 @@ class AllergyAdapter(
 
 
     /**
-     * A method to remove an allergy from the dataList and allergyList.
+     * A function to remove an allergy from the dataList and allergyList.
      *
      * @param[position] The position in the array lists to remove the allergy from.
      */

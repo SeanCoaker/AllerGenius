@@ -5,10 +5,13 @@
     <!-- Makes sure device has a camera and allows the camera to be the front or back camera  -->
     <uses-feature android:name="android.hardware.camera.any" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:fullBackupContent="true"
+        android:name=".ApplicationStartup"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

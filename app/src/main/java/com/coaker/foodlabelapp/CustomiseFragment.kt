@@ -15,11 +15,17 @@ import androidx.core.text.italic
 import androidx.core.text.underline
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
-
+/**
+ * A class designed to handle the customisation feature of the application.
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 class CustomiseFragment : Fragment(), View.OnClickListener {
 
     private lateinit var root: View
@@ -51,11 +57,20 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
     private lateinit var lowSaltText: TextView
     private lateinit var highSaltText: TextView
 
-
     private var allergyColour = Color.parseColor(Variables.allergyColour)
     private var foodColour = Color.parseColor(Variables.foodColour)
     private var symptomColour = Color.parseColor(Variables.symptomColour)
 
+
+    /**
+     * A function that is called when the fragment is created.
+     *
+     * @param[inflater] Inflater used to inflate the layout in this fragment.
+     * @param[container] Contains the content of the fragment.
+     * @param[savedInstanceState] Any previous saved instance of the fragment.
+     *
+     * @return[View] The view that has been created.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -97,6 +112,7 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
             loadFoodScoreColorPicker("foodScoreX")
         }
 
+        // Sets the colours of food scores for display
         foodScoreA.backgroundTintList =
             ColorStateList.valueOf(Color.parseColor(Variables.trafficLightA))
         foodScoreB.backgroundTintList =
@@ -147,6 +163,7 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         val symptomButton = root.findViewById<Button>(R.id.symptomColorButton)
         val calendarDayPreview = root.findViewById<View>(R.id.calendarDayPreview)
 
+        // Sets up the text and pointer colours for a diary day preview example
         calendarDayPreview.findViewById<TextView>(R.id.calendarDayText).text = getString(R.string.day_example)
         calendarDayPreview.findViewById<View>(R.id.foodNotifView).backgroundTintList =
             ColorStateList.valueOf(Color.parseColor(Variables.foodColour))
@@ -169,6 +186,10 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
     }
 
 
+    /**
+     * A function called to setup the help buttons displayed in each card view to display
+     * instructions to the user of how the customisation works.
+     */
     private fun setupHelpButtons() {
         val helpButtonAllergies: TextView = root.findViewById(R.id.helpButtonAllergies)
         val helpButtonTraffic: TextView = root.findViewById(R.id.helpButtonTraffic)
@@ -300,6 +321,9 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
     }
 
 
+    /**
+     * A function created to setup the seek bars in the nutrition values customisation section.
+     */
     private fun setupSeekBars() {
 
         val lowFatString = "${resources.getText(R.string.low)}:  ${Variables.fatLow}g"
@@ -319,6 +343,7 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         val highSaltString = "${resources.getText(R.string.high)}:  ${Variables.saltHigh}g"
         highSaltText.text = highSaltString
 
+        // Sets up all seek bars to previously saved values
         lowFatSeek.progress = Variables.fatLow
         highFatSeek.progress = Variables.fatHigh
         lowSaturatesSeek.progress = Variables.saturatesLow
@@ -328,7 +353,17 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         lowSaltSeek.progress = Variables.saltLow
         highSaltSeek.progress = Variables.saltHigh
 
+        // Seek bar changes are handled
+
         lowFatSeek.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            /**
+             * A function called when the seek bar value is changed.
+             *
+             * @param[seekBar] The seek bar being changed
+             * @param[progress] The value the seek bar is being changed to
+             * @param[fromUser] Whether the change came from the user
+             */
             override fun onProgressChanged(
                 seekBar: SeekBar, progress: Int,
                 fromUser: Boolean
@@ -347,6 +382,14 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         })
 
         highFatSeek.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            /**
+             * A function called when the seek bar value is changed.
+             *
+             * @param[seekBar] The seek bar being changed
+             * @param[progress] The value the seek bar is being changed to
+             * @param[fromUser] Whether the change came from the user
+             */
             override fun onProgressChanged(
                 seekBar: SeekBar, progress: Int,
                 fromUser: Boolean
@@ -365,6 +408,14 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         })
 
         lowSaturatesSeek.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            /**
+             * A function called when the seek bar value is changed.
+             *
+             * @param[seekBar] The seek bar being changed
+             * @param[progress] The value the seek bar is being changed to
+             * @param[fromUser] Whether the change came from the user
+             */
             override fun onProgressChanged(
                 seekBar: SeekBar, progress: Int,
                 fromUser: Boolean
@@ -383,6 +434,14 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         })
 
         highSaturatesSeek.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            /**
+             * A function called when the seek bar value is changed.
+             *
+             * @param[seekBar] The seek bar being changed
+             * @param[progress] The value the seek bar is being changed to
+             * @param[fromUser] Whether the change came from the user
+             */
             override fun onProgressChanged(
                 seekBar: SeekBar, progress: Int,
                 fromUser: Boolean
@@ -401,6 +460,14 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         })
 
         lowSugarSeek.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            /**
+             * A function called when the seek bar value is changed.
+             *
+             * @param[seekBar] The seek bar being changed
+             * @param[progress] The value the seek bar is being changed to
+             * @param[fromUser] Whether the change came from the user
+             */
             override fun onProgressChanged(
                 seekBar: SeekBar, progress: Int,
                 fromUser: Boolean
@@ -419,6 +486,14 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         })
 
         highSugarSeek.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            /**
+             * A function called when the seek bar value is changed.
+             *
+             * @param[seekBar] The seek bar being changed
+             * @param[progress] The value the seek bar is being changed to
+             * @param[fromUser] Whether the change came from the user
+             */
             override fun onProgressChanged(
                 seekBar: SeekBar, progress: Int,
                 fromUser: Boolean
@@ -437,6 +512,14 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         })
 
         lowSaltSeek.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            /**
+             * A function called when the seek bar value is changed.
+             *
+             * @param[seekBar] The seek bar being changed
+             * @param[progress] The value the seek bar is being changed to
+             * @param[fromUser] Whether the change came from the user
+             */
             override fun onProgressChanged(
                 seekBar: SeekBar, progress: Int,
                 fromUser: Boolean
@@ -455,6 +538,14 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         })
 
         highSaltSeek.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+
+            /**
+             * A function called when the seek bar value is changed.
+             *
+             * @param[seekBar] The seek bar being changed
+             * @param[progress] The value the seek bar is being changed to
+             * @param[fromUser] Whether the change came from the user
+             */
             override fun onProgressChanged(
                 seekBar: SeekBar, progress: Int,
                 fromUser: Boolean
@@ -474,11 +565,21 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
     }
 
 
+    /**
+     * A function used to load the color picker based on the food score being changed
+     *
+     * @param[id] An identification of the food score being changed
+     */
     private fun loadFoodScoreColorPicker(id: String) {
         ColorPickerFragment(id).show(childFragmentManager, "Colour Picker")
     }
 
 
+    /**
+     * A function called to handle clicks on bold, italic or underline buttons.
+     *
+     * @param[v] The button being clicked on
+     */
     override fun onClick(v: View) {
         selectButton(v as Button)
         setAllergyBIU()
@@ -486,6 +587,12 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
     }
 
 
+    /**
+     * A function called to change the display of the bold, italic and underline buttons depending
+     * on if the user has selected them or not.
+     *
+     * @param[button] The button to be changed
+     */
     private fun selectButton(button: Button) {
         if (button.isSelected) {
             button.setBackgroundColor(requireContext().getColor(R.color.light_purple))
@@ -496,6 +603,11 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         button.isSelected = !button.isSelected
     }
 
+
+    /**
+     * A function used to setup initial appearance and selections of the bold, italic or underline
+     * buttons using the previously saved preferences of the user.
+     */
     private fun setupAllergyButtons() {
         when (Variables.allergyBIU) {
             "NIL" -> {
@@ -548,7 +660,12 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         }
     }
 
+
+    /**
+     * A function used to save the user's bold, italic and underline preferences globally.
+     */
     private fun setAllergyBIU() {
+        // Clears the previous save before adding the new preference
         Variables.allergyBIU = ""
 
         if (!boldButton.isSelected && !italicButton.isSelected && !underlineButton.isSelected) {
@@ -568,11 +685,16 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         }
     }
 
+
+    /**
+     * A function used to setup the allergy preview included in the allergy section.
+     */
     fun setAllergyPreview() {
         val allergyPreviewText = root.findViewById<TextView>(R.id.allergyPreviewText)
         val ssb = SpannableStringBuilder()
         ssb.clear()
 
+        // Allergens are shown in the preview using the preferences of the user
         when (Variables.allergyBIU) {
             "NIL" -> {
                 allergyPreviewText.text = ssb.bold { append("Ingredients:\n") }
@@ -688,10 +810,19 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
         }
     }
 
+
+    /**
+     * A function used to reset the allergy colour preview.
+     */
     fun reloadAllergyColour() {
         allergyColour = Color.parseColor(Variables.allergyColour)
     }
 
+
+    /**
+     * A function used to add customisation data from the application to the user's Firestore
+     * document.
+     */
     private fun updateFirestore() {
         val db = FirebaseFirestore.getInstance()
         val users = db.collection("users")
@@ -720,9 +851,14 @@ class CustomiseFragment : Fragment(), View.OnClickListener {
             )
     }
 
+
+    /**
+     * A function that is called when the fragment is paused.
+     */
     override fun onPause() {
         super.onPause()
 
+        // All seek bar levels are saved
         Variables.fatLow = lowFatSeek.progress
         Variables.fatHigh = highFatSeek.progress
         Variables.saturatesLow = lowSaturatesSeek.progress

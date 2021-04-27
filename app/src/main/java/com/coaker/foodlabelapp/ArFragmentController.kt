@@ -8,11 +8,9 @@ import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.util.Log
 import android.util.SparseIntArray
-import android.view.LayoutInflater
-import android.view.Surface
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
@@ -32,6 +30,12 @@ import okhttp3.Request
 import org.json.JSONObject
 import java.util.*
 
+/**
+ * A class used to run the augmented reality feature in the application.
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 class ArFragmentController : Fragment() {
 
     private val client = OkHttpClient()
@@ -44,6 +48,7 @@ class ArFragmentController : Fragment() {
 
     private val ORIENTATIONS = SparseIntArray()
 
+    // Rotations used for calculating where to display augmented labels.
     init {
         ORIENTATIONS.append(Surface.ROTATION_0, 0)
         ORIENTATIONS.append(Surface.ROTATION_90, 90)
@@ -51,6 +56,16 @@ class ArFragmentController : Fragment() {
         ORIENTATIONS.append(Surface.ROTATION_270, 270)
     }
 
+
+    /**
+     * A function that is called when the fragment is created.
+     * 
+     * @param[inflater] Inflater used to inflate the layout in this fragment.
+     * @param[container] Contains the content of the fragment.
+     * @param[savedInstanceState] Any previous saved instance of the fragment.
+     *
+     * @return[View] The view that has been created.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -73,10 +88,15 @@ class ArFragmentController : Fragment() {
     }
 
 
-    // Code from https://developers.google.com/ar/develop/java/enable-arcore#ar-optional
+    /**
+     * A function used to setup the AR button in the camera view.
+     *
+     * Reference: Code from https://developers.google.com/ar/develop/java/enable-arcore#ar-optional
+     */
     private fun setupArButton() {
         arSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
+                // Switches back to usual barcode scanning using CameraX API.
                 parent.switchToCamFragment()
             }
         }
@@ -84,16 +104,20 @@ class ArFragmentController : Fragment() {
     }
 
 
+    /**
+     * A function called when the fragment resumes from a paused state.
+     */
     override fun onResume() {
         super.onResume()
 
         arFragment.setOnSessionInitializationListener {
 
             root.findViewById<Button>(R.id.scanButton).setOnClickListener {
-                Log.i("AR", "Worked")
 
                 val image = arFragment.arSceneView.arFrame?.acquireCameraImage()
                 val barcodeScanner = BarcodeScanning.getClient()
+
+                // Processes barcodes identified in the image from the AR camera.
                 barcodeScanner.process(
                     InputImage.fromMediaImage(
                         image!!,
@@ -103,12 +127,15 @@ class ArFragmentController : Fragment() {
                     .addOnSuccessListener {
                         if (it != null && it.size > 0) {
                             for (barcode in it) {
+                                // Creates a position at 1.5 metres away and at the centre of the camera.
                                 val pos = floatArrayOf(0f, 0f, -1.5f)
+                                // Creates a rotation identical to the device's rotation.
                                 val rot = floatArrayOf(0f, 0f, 0f, 0f)
 
                                 setupLabelData(
                                     barcode.rawValue,
                                     arFragment,
+                                    // Creates an ARCore anchor.
                                     arFragment.arSceneView.session!!.createAnchor(
                                         arFragment.arSceneView.arFrame!!.camera.pose.compose(
                                             Pose(pos, rot)
@@ -129,6 +156,9 @@ class ArFragmentController : Fragment() {
     }
 
 
+    /**
+     * A function called when the fragemnt is being stopped.
+     */
     override fun onStop() {
         super.onStop()
         val session = arFragment.arSceneView.session
@@ -147,21 +177,36 @@ class ArFragmentController : Fragment() {
     }
 
 
+    /**
+     * A function called to get the rotation compensation from the camera's orientation.
+     * 
+     * return[Int] Return the rotation compensation.
+     */
     private fun getRotationCompensation(): Int {
-        val deviceRotation = requireContext().display!!.rotation
-        var rotationCompensation = ORIENTATIONS.get(deviceRotation)
+        // Gets portrait orientation
+        var rotationCompensation = ORIENTATIONS.get(0)
 
         val cameraManager = parent.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         val cameraId = cameraManager.cameraIdList[0]
         val sensorOrientation = cameraManager.getCameraCharacteristics(cameraId)
             .get(CameraCharacteristics.SENSOR_ORIENTATION)!!
 
+        // Creates the rotation compensation based on the rear camera.
         rotationCompensation = (sensorOrientation - rotationCompensation + 360) % 360
 
         return rotationCompensation
     }
 
 
+    /**
+     * A fragment used to place the label on the AR camera view.
+     * 
+     * @param[fragment] The AR fragment.
+     * @param[anchor] The anchor used to display labels on.
+     * @param[productName] The name of the product that has been scanned.
+     * @param[barcode] The barcode value of the product that has been scanned.
+     * @param[foodScore] The calculated food score of the product that has been scanned.
+     */
     private fun placeLabel(
         fragment: CustomArFragment,
         anchor: Anchor,
@@ -169,20 +214,23 @@ class ArFragmentController : Fragment() {
         barcode: String,
         foodScore: String
     ) {
+        // Builds a renderable to be displayed in AR.
         ViewRenderable.builder()
             .setView(requireContext(), R.layout.ar_label)
             .build()
             .thenAccept {
-//                it.view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                // Creates a rounded shape for the renderable.
                 it.view.background =
                     ContextCompat.getDrawable(requireContext(), R.drawable.dialog_background)
                 it.isShadowReceiver = false
                 it.isShadowCaster = false
                 it.view.findViewById<TextView>(R.id.productNameText).text = productName
                 it.view.findViewById<TextView>(R.id.barcodeIdText).text = barcode
+                val crossButton: ImageButton = it.view.findViewById(R.id.crossButtonAR)
 
                 val foodScoreText = it.view.findViewById<TextView>(R.id.textViewFoodScore)
 
+                // Sets the correct colour for each food score.
                 when (foodScore) {
                     "A" -> {
                         foodScoreText.text = foodScore
@@ -224,11 +272,22 @@ class ArFragmentController : Fragment() {
                     showBottomSheet(barcode)
                 }
 
+                crossButton.setOnClickListener {
+                    anchor.detach()
+                }
+
                 addLabelToScene(fragment, anchor, it)
             }
     }
 
 
+    /**
+     * A function called to add the label to AR view.
+     * 
+     * @param[fragment] The AR fragment.
+     * @param[anchor] The anchor to display the label onto.
+     * @param[renderable] The renderable to be displayed to the AR view.
+     */
     private fun addLabelToScene(
         fragment: CustomArFragment,
         anchor: Anchor,
@@ -238,37 +297,32 @@ class ArFragmentController : Fragment() {
         val node = TransformableNode(fragment.transformationSystem)
         node.renderable = renderable
         node.setParent(anchorNode)
-//        node.localRotation = Quaternion.axisAngle(Vector3(-1.0f, 0f, 0f), 90f)
         fragment.arSceneView.scene.addChild(anchorNode)
     }
 
 
+    /**
+     * A function called to setup the data needed to appropriately display the label in AR view.
+     * 
+     * @param[rawValue] The value of the barcode to be searched for.
+     * @param[fragment] The AR fragment.
+     * @param[anchor] The anchor to display the label onto. 
+     */
     private fun setupLabelData(rawValue: String?, fragment: CustomArFragment, anchor: Anchor) {
         var response: JSONObject? = null
         var product: JSONObject?
 
-        var productId = ""
-        var brand = ""
-        var productName = ""
+        var productName: String
 
-        var energyUnit = ""
+        var fat100: Double
+        var saturatedFat100: Double
+        var sugar100: Double
+        var salt100: Double
 
-        var servingSize = ""
-        var energy100 = 0.0
-        var fat100 = 0.0
-        var saturatedFat100 = 0.0
-        var carbs100 = 0.0
-        var sugar100 = 0.0
-        var fibre100 = 0.0
-        var protein100 = 0.0
-        var salt100 = 0.0
-
-        var ingredients = ""
+        var ingredients: String
         var additives = ""
 
-        var allergens = ""
-        var traces = ""
-
+        // Fetches the JSON data on a seperate thread to the UI thread.
         lifecycleScope.launch {
 
             try {
@@ -282,28 +336,13 @@ class ArFragmentController : Fragment() {
                 if (status == 1) {
                     product = response!!.getJSONObject("product")
 
-                    productId = product!!.getString("id")
-
-                    brand = product!!.getString("brands")
                     productName = product!!.getString("product_name")
 
                     val nutriments = product!!.getJSONObject("nutriments")
 
-                    energyUnit = nutriments.getString("energy_unit")
-
-                    energy100 = if (energyUnit == "kJ") {
-                        nutriments.getDouble("energy")
-                    } else {
-                        nutriments.getDouble("energy-kcal_100g")
-                    }
-
-                    servingSize = product!!.getString("serving_size")
                     fat100 = nutriments.getDouble("fat_100g")
                     saturatedFat100 = nutriments.getDouble("saturated-fat_100g")
-                    carbs100 = nutriments.getDouble("carbohydrates_100g")
                     sugar100 = nutriments.getDouble("sugars_100g")
-                    fibre100 = nutriments.getDouble("fiber_100g")
-                    protein100 = nutriments.getDouble("proteins_100g")
                     salt100 = nutriments.getDouble("salt_100g")
 
                     ingredients = product!!.getString("ingredients_text")
@@ -315,9 +354,7 @@ class ArFragmentController : Fragment() {
                         additives += "$additive\n"
                     }
 
-                    allergens = product!!.getString("allergens")
-                    traces = product!!.getString("traces")
-
+                    // Sets the food score to X if one of the user's allergens is found in the ingredients.
                     val foodScore: String = if (findAllergens(ingredients)) {
                         "X"
                     } else {
@@ -337,6 +374,13 @@ class ArFragmentController : Fragment() {
         }
     }
 
+
+    /**
+     * A function that fetches the data associated with the barcode from the open food facts database.
+     * 
+     * @param[rawValue] The value of the barcode that was scanned.
+     * @return[JSONObject] The JSON object returned from the http request.
+     */
     private fun getProduct(rawValue: String?): JSONObject {
         val url = "https://en.openfoodfacts.org/api/v0/product/$rawValue.json"
         val request = Request.Builder().url(url).build()
@@ -347,6 +391,16 @@ class ArFragmentController : Fragment() {
     }
 
 
+    /**
+     * A function used to calculate the food score of a product. It uses a point based system to calculate 
+     * a food score for the product.
+     * 
+     * @param[fat] The fat per 100g in the food product
+     * @param[saturates] The saturated fat per 100g in the food product
+     * @param[sugar] The sugar per 100g in the food product
+     * @param[salt] The salt per 100g in the food product
+     * @return[String] The food score assigned to the product
+     */
     private fun calculateFoodScore(
         fat: Double,
         saturates: Double,
@@ -409,32 +463,38 @@ class ArFragmentController : Fragment() {
     }
 
 
+    /**
+     * A function used to display the digital food label as a bottom sheet.
+     * 
+     * @param[rawValue] The barcode of the food product.
+     */
     private fun showBottomSheet(rawValue: String) {
         var response: JSONObject? = null
         var product: JSONObject?
 
         var productId = ""
-        var brand = ""
-        var productName = ""
+        var brand: String
+        var productName: String
 
-        var energyUnit = ""
+        var energyUnit: String
 
-        var servingSize = ""
-        var energy100 = 0.0
-        var fat100 = 0.0
-        var saturatedFat100 = 0.0
-        var carbs100 = 0.0
-        var sugar100 = 0.0
-        var fibre100 = 0.0
-        var protein100 = 0.0
-        var salt100 = 0.0
+        var servingSize: String
+        var energy100: Double
+        var fat100: Double
+        var saturatedFat100: Double
+        var carbs100: Double
+        var sugar100: Double
+        var fibre100: Double
+        var protein100: Double
+        var salt100: Double
 
-        var ingredients = ""
+        var ingredients: String
         var additives = ""
 
-        var allergens = ""
-        var traces = ""
+        var allergens: String
+        var traces: String
 
+        // Fetches the JSON data on a seperate thread to the UI thread.
         lifecycleScope.launch {
 
             val bottomSheet = BottomSheetBarcodeResult(null)
@@ -487,6 +547,7 @@ class ArFragmentController : Fragment() {
                     allergens = product!!.getString("allergens")
                     traces = product!!.getString("traces")
 
+                    // Bundles all the data ready to be sent to the bottom sheet class to be displayed.
                     bundle.putString("brand", brand)
                     bundle.putString("product_name", productName)
 
@@ -531,6 +592,12 @@ class ArFragmentController : Fragment() {
     }
 
 
+    /**
+     * A function called to find the user's allergens in the food product's ingredients.
+     * 
+     * @param[ingredients] The list of ingredients to search through
+     * @return[Boolean] True if an allergen was found, False otherwise
+     */
     private fun findAllergens(ingredients: String): Boolean {
         val ingredientList = ingredients.split(",")
 

@@ -17,7 +17,7 @@ import kotlin.collections.ArrayList
 /**
  * An adapter class that displays an allergy in a card view.
  *
- * @author Sean Coaker (986529)
+ * @author Sean Coaker
  * @since 1.0
  */
 class FoodsAdapter(
@@ -121,6 +121,13 @@ class FoodsAdapter(
         return dataList.size
     }
 
+
+    /**
+     * A function used to mark allergens in the ingredients list of a food item stored in the food
+     * list being displayed in the diary feature.
+     *
+     * @param[ingredients] A list of ingredients for the food item
+     */
     private fun findAllergens(ingredients: String?): SpannableStringBuilder {
         val output = SpannableStringBuilder().append("Ingredients:\n")
 

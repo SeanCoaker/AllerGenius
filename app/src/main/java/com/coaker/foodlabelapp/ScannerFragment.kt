@@ -3,6 +3,7 @@ package com.coaker.foodlabelapp
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -36,10 +37,18 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+// A type alias used to pass data between ML Kit and this class
 typealias ValueListener = (rawValue: String, displayValue: String) -> Unit
 
+/**
+ * A class created to handle the workings of the main camera barcode scanning feature
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 class ScannerFragment : Fragment() {
 
+    private var connected = true
     private val client = OkHttpClient()
 
     private var imageAnalyser: ImageAnalysis? = null
@@ -50,12 +59,21 @@ class ScannerFragment : Fragment() {
     private lateinit var root: View
     private lateinit var arSwitch: SwitchCompat
 
+
+    /**
+     * A function that is called when the fragment is created.
+     *
+     * @param[inflater] Inflater used to inflate the layout in this fragment.
+     * @param[container] Contains the content of the fragment.
+     * @param[savedInstanceState] Any previous saved instance of the fragment.
+     *
+     * @return[View] The view that has been created.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         root = inflater.inflate(R.layout.fragment_scanner, container, false)
-        scannerContext = requireContext()
 
         parent = activity as MainActivity
 
@@ -66,27 +84,44 @@ class ScannerFragment : Fragment() {
         promptChip = root.findViewById(R.id.instructionChip)
         promptChip.text = getString(R.string.scanner_instruction)
 
-        checkARAvailability()
+        // Only sets up camera scanning if the device is connected to a network
+        if (Variables.isConnected) {
 
-        // Request camera permissions
-        if (allPermissionsGranted()) {
-            startCamera()
+            checkARAvailability()
+
+            // Request camera permissions
+            if (allPermissionsGranted()) {
+                startCamera()
+            } else {
+                ActivityCompat.requestPermissions(
+                    parent,
+                    REQUIRED_PERMISSIONS,
+                    REQUEST_CODE_PERMISSIONS
+                )
+            }
+
+            cameraExecutor = Executors.newSingleThreadExecutor()
+
+            setupArButton()
         } else {
-            ActivityCompat.requestPermissions(
-                parent,
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
+            connected = false
+            arSwitch.visibility = View.GONE
+            cameraView.visibility = View.GONE
+            promptChip.visibility = View.GONE
         }
 
-        cameraExecutor = Executors.newSingleThreadExecutor()
 
-        setupArButton()
 
         // Inflate the layout for this fragment
         return root
     }
 
+
+    /**
+     * Checks if AR is available on the device before allowing the user to switch to AR.
+     *
+     * @return[Boolean] Whether AR is available or not
+     */
     private fun checkARAvailability(): Boolean {
         val availability = ArCoreApk.getInstance().checkAvailability(requireContext())
 
@@ -108,10 +143,11 @@ class ScannerFragment : Fragment() {
     }
 
 
-    // Code from https://developers.google.com/ar/develop/java/enable-arcore#ar-optional
+    /**
+     * A function used to setup the AR button displayed in this fragment so that when the AR switch
+     * is pressed, the app switches to AR mode.
+     */
     private fun setupArButton() {
-
-
         arSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 parent.switchToArFragment()
@@ -121,6 +157,9 @@ class ScannerFragment : Fragment() {
     }
 
 
+    /**
+     * A function used to setup the camera for barcode scanning using ML Kit's ImageAnalysis.
+     */
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
@@ -161,15 +200,26 @@ class ScannerFragment : Fragment() {
         }, ContextCompat.getMainExecutor(context))
     }
 
+
+    /**
+     * Checks that all permissions are granted for camera access.
+     */
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             parent.baseContext, it
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+
+    /**
+     * A function to handle what happens to the fragment when it is destroyed
+     */
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutor.shutdown()
+
+        if (connected) {
+            cameraExecutor.shutdown()
+        }
     }
 
     companion object {
@@ -178,9 +228,18 @@ class ScannerFragment : Fragment() {
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
         private lateinit var promptChip: Chip
-        private lateinit var scannerContext: Context
+        private var multiCodes: Boolean = false
     }
 
+
+    /**
+     * A function that handles what happens when the user returns from granting or not granting access
+     * to their device's camera.
+     *
+     * @param[requestCode] The request code sent to the permission window
+     * @param[permissions] The permissions asked for
+     * @param[grantResults] The results of the permissions asked
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
         IntArray
@@ -198,32 +257,40 @@ class ScannerFragment : Fragment() {
         }
     }
 
+
+    /**
+     * A function used to display the digital food label as a bottom sheet.
+     *
+     * @param[rawValue] The barcode of the food product.
+     * @param[displayValue] The name of the food item.
+     */
     private fun showBottomSheet(rawValue: String, displayValue: String) {
         var response: JSONObject? = null
         var product: JSONObject?
 
         var productId = ""
-        var brand = ""
-        var productName = ""
+        var brand: String
+        var productName: String
 
-        var energyUnit = ""
+        var energyUnit: String
 
-        var servingSize = ""
-        var energy100 = 0.0
-        var fat100 = 0.0
-        var saturatedFat100 = 0.0
-        var carbs100 = 0.0
-        var sugar100 = 0.0
-        var fibre100 = 0.0
-        var protein100 = 0.0
-        var salt100 = 0.0
+        var servingSize: String
+        var energy100: Double
+        var fat100: Double
+        var saturatedFat100: Double
+        var carbs100: Double
+        var sugar100: Double
+        var fibre100: Double
+        var protein100: Double
+        var salt100: Double
 
-        var ingredients = ""
+        var ingredients: String
         var additives = ""
 
-        var allergens = ""
-        var traces = ""
+        var allergens: String
+        var traces: String
 
+        // Fetches the JSON data on a seperate thread to the UI thread.
         lifecycleScope.launch {
 
             val bottomSheet = BottomSheetBarcodeResult(this@ScannerFragment)
@@ -278,6 +345,7 @@ class ScannerFragment : Fragment() {
                     allergens = product!!.getString("allergens")
                     traces = product!!.getString("traces")
 
+                    // Bundles all the data ready to be sent to the bottom sheet class to be displayed.
                     bundle.putString("brand", brand)
                     bundle.putString("product_name", productName)
 
@@ -316,6 +384,13 @@ class ScannerFragment : Fragment() {
         }
     }
 
+
+    /**
+     * A function that fetches the data associated with the barcode from the open food facts database.
+     *
+     * @param[rawValue] The value of the barcode that was scanned.
+     * @return[JSONObject] The JSON object returned from the http request.
+     */
     private fun getProduct(rawValue: String): JSONObject {
         val url = "https://en.openfoodfacts.org/api/v0/product/$rawValue.json"
         val request = Request.Builder().url(url).build()
@@ -325,15 +400,45 @@ class ScannerFragment : Fragment() {
         return JSONObject(response)
     }
 
+
+    /**
+     * A function called to setup the image analyser from ML Kit to scan for barcodes.
+     */
     fun setupAnalyser() {
         imageAnalyser!!.setAnalyzer(cameraExecutor, BarcodeAnalyser { rawValue, displayValue ->
-            showBottomSheet(rawValue, displayValue)
+
+            // Prompt chips are shown with instructions to the viewer of how to use the feature
+            if (Variables.isConnected) {
+                if (multiCodes) {
+                    promptChip.setTextColor(Color.RED)
+                    promptChip.text = requireContext().getString(R.string.multi_barcode_error)
+                } else {
+                    promptChip.setTextColor(Color.BLACK)
+                    promptChip.text = requireContext().getString(R.string.scanner_instruction)
+                    showBottomSheet(rawValue, displayValue)
+                }
+            } else {
+                promptChip.setTextColor(Color.RED)
+                promptChip.text = requireContext().getString(R.string.network_connection_error)
+            }
+
             imageAnalyser!!.clearAnalyzer()
         })
     }
 
+
+    /**
+     * A private class setup to handle the barcode scanning feature of the application.
+     *
+     * @param[listener] The listener data at the top of this file
+     */
     private class BarcodeAnalyser(private val listener: ValueListener) : ImageAnalysis.Analyzer {
 
+        /**
+         * A function to convert ByteBuffer to a ByteArray
+         *
+         * @return[ByteArray] The result of the conversion
+         */
         private fun ByteBuffer.toByteArray(): ByteArray {
             rewind()    // Rewind the buffer to zero
             val data = ByteArray(remaining())
@@ -341,31 +446,46 @@ class ScannerFragment : Fragment() {
             return data // Return the byte array
         }
 
+
+        /**
+         * A function called to analyse a barcode within an ImageProxy.
+         *
+         * Reference: https://developers.google.com/ml-kit/vision/barcode-scanning/android
+         *
+         * @param[imageProxy] The image proxy to be analysed
+         */
         @ExperimentalGetImage
         override fun analyze(imageProxy: ImageProxy) {
             val mediaImage = imageProxy.image
             if (mediaImage != null) {
+                // Rotates the image based on the camera rotation used to create the image proxy
                 val image =
                     InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
                 val scanner = BarcodeScanning.getClient()
 
+                // Scans the image for a barcode
                 scanner.process(image)
                     .addOnSuccessListener { barcodes ->
 
+                        // Displays a food label if one barcode was found, displays an error otherwise
                         if (barcodes.size > 1) {
-                            promptChip.text = scannerContext.getString(R.string.multi_barcode_error)
+                            multiCodes = true
+                            listener("", "")
+                            imageProxy.close()
+
                         } else {
                             for (barcode in barcodes) {
+                                multiCodes = false
+
                                 val rawValue = barcode.rawValue
                                 val displayValue = barcode.displayValue
 
                                 listener(rawValue!!, displayValue!!)
 
                                 imageProxy.close()
-
-                                promptChip.text = scannerContext.getString(R.string.scanner_instruction)
                             }
+
                         }
 
                     }
@@ -378,6 +498,7 @@ class ScannerFragment : Fragment() {
                     .addOnCompleteListener {
                         imageProxy.close()
                     }
+
             }
         }
     }

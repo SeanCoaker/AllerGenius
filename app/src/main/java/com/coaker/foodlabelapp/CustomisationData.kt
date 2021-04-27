@@ -1,5 +1,11 @@
 package com.coaker.foodlabelapp
 
+/**
+ * A data class used to store customisation data set by the user
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 data class CustomisationData(
     val allergyColour: String = "#FF0000",
     val allergyBIU: String = "NIL",

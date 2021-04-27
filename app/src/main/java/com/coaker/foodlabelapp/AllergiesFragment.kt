@@ -16,12 +16,29 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
+/**
+ * A class made to handle the allergy list fragment. Where users can add allergens
+ * to their allergy list to have them tracked across the application.
+ *
+ * @author Sean Coaker
+ * @since 1.0
+ */
 class AllergiesFragment : Fragment() {
 
     private lateinit var parent: MainActivity
     private lateinit var addButton: Button
     private lateinit var addAllergyTextLayout: TextInputLayout
 
+
+    /**
+     * A function that is called when the fragment is created.
+     * 
+     * @param[inflater] Inflater used to inflate the layout in this fragment.
+     * @param[container] Contains the content of the fragment.
+     * @param[savedInstanceState] Any previous saved instance of the fragment.
+     *
+     * @return[View] The view that has been created.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,6 +64,7 @@ class AllergiesFragment : Fragment() {
 
         addButton.setOnClickListener {
             populateAllergyList()
+            // Updates the list in the allergy adapter
             adapter.notifyDataSetChanged()
             addButton.visibility = View.GONE
             addAllergyTextLayout.visibility = View.GONE
@@ -56,6 +74,10 @@ class AllergiesFragment : Fragment() {
         return root
     }
 
+
+    /**
+     * A function used to add allergens to the user's allergy list.
+     */
     private fun populateAllergyList() {
         val allergyText = parent.findViewById<TextInputEditText>(R.id.editTextAllergies).text
         val allergies = allergyText!!.split(",")
@@ -63,10 +85,14 @@ class AllergiesFragment : Fragment() {
 
         if (allergies.first() != "") {
             allergies.forEach {
+
+                // Checks if the allergen is already in the list.
                 if (Variables.allergyList.stream().noneMatch { s ->
                         s.equals(it, true)
                     }) {
-                    Variables.allergyList.add(it)
+
+                    // Removes leading and trailing whitespace from allergen.
+                    Variables.allergyList.add(it.trimStart().trimEnd())
                 } else {
                     alreadyExists = true
                 }
@@ -84,6 +110,10 @@ class AllergiesFragment : Fragment() {
         updateFirestore()
     }
 
+
+    /**
+     * A function used to update the allergen list stored in the user's Firestore documents.
+     */
     fun updateFirestore() {
         val db = FirebaseFirestore.getInstance()
         val users = db.collection("users")
@@ -92,6 +122,12 @@ class AllergiesFragment : Fragment() {
             .document("allergies").set(mapOf("allergies" to Variables.allergyList))
     }
 
+
+    /**
+     * A function used to overwrite the existing allergen list with the new entries.
+     * 
+     * @param[dataList] List of allergens.
+     */
     fun updateAllergyList(dataList: ArrayList<String>) {
         Variables.allergyList = dataList
     }

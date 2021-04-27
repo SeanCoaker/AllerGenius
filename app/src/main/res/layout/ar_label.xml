@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:backgroundTint="@color/white"
-    android:layout_width="match_parent"
+    android:layout_width="250dp"
     android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -22,12 +22,12 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/barcodeIdText"
-        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="44dp"
         android:text="@string/barcode_id"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toStartOf="@+id/textViewFoodScore"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,19 +35,31 @@
 
     <TextView
         android:id="@+id/textViewFoodScore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="11dp"
         android:background="@drawable/circle"
         android:backgroundTint="@color/traffic_light_amber"
         android:gravity="center"
         android:text=""
         android:textColor="@color/white"
-        android:textSize="50dp"
+        android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/crossButtonAR"
         tools:ignore="SpUsage" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/crossButtonAR"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="?android:colorControlNormal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_clear_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
