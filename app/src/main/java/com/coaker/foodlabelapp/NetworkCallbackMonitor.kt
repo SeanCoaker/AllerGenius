@@ -14,6 +14,8 @@ import com.google.firebase.ktx.Firebase
  * This class continues to check whether the user has an internet connection throughout their use of
  * the app.
  *
+ * Reference: https://hmkcode.com/android/android-network-connectivity-callback/
+ *
  * @author Sean Coaker (986529)
  * @since 1.0
  */

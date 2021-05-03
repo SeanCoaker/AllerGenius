@@ -19,6 +19,8 @@ import com.larswerkman.holocolorpicker.SVBar
  * A class built to handle colour picking to allow the user to customise the appearance of some
  * features in the application. The library used can be found here https://github.com/LarsWerkman/HoloColorPicker
  *
+ * Reference for some code used: https://github.com/LarsWerkman/HoloColorPicker
+ *
  * @author Sean Coaker
  * @since 1.0
  */

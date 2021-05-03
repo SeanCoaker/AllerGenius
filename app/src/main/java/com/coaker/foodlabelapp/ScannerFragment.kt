@@ -159,6 +159,8 @@ class ScannerFragment : Fragment() {
 
     /**
      * A function used to setup the camera for barcode scanning using ML Kit's ImageAnalysis.
+     *
+     * Reference: https://miguel-lasa.medium.com/barcode-scanner-with-camerax-and-mlkit-bde53fbc2b8f
      */
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
@@ -411,15 +413,21 @@ class ScannerFragment : Fragment() {
             if (Variables.isConnected) {
                 if (multiCodes) {
                     promptChip.setTextColor(Color.RED)
-                    promptChip.text = requireContext().getString(R.string.multi_barcode_error)
+                    if (context != null) {
+                        promptChip.text = requireContext().getString(R.string.multi_barcode_error)
+                    }
                 } else {
                     promptChip.setTextColor(Color.BLACK)
-                    promptChip.text = requireContext().getString(R.string.scanner_instruction)
+                    if (context != null) {
+                        promptChip.text = requireContext().getString(R.string.scanner_instruction)
+                    }
                     showBottomSheet(rawValue, displayValue)
                 }
             } else {
                 promptChip.setTextColor(Color.RED)
-                promptChip.text = requireContext().getString(R.string.network_connection_error)
+                if (context != null) {
+                    promptChip.text = requireContext().getString(R.string.network_connection_error)
+                }
             }
 
             imageAnalyser!!.clearAnalyzer()
@@ -429,6 +437,8 @@ class ScannerFragment : Fragment() {
 
     /**
      * A private class setup to handle the barcode scanning feature of the application.
+     *
+     * Reference: https://miguel-lasa.medium.com/barcode-scanner-with-camerax-and-mlkit-bde53fbc2b8f
      *
      * @param[listener] The listener data at the top of this file
      */
@@ -450,7 +460,7 @@ class ScannerFragment : Fragment() {
         /**
          * A function called to analyse a barcode within an ImageProxy.
          *
-         * Reference: https://developers.google.com/ml-kit/vision/barcode-scanning/android
+         * Reference: https://miguel-lasa.medium.com/barcode-scanner-with-camerax-and-mlkit-bde53fbc2b8f
          *
          * @param[imageProxy] The image proxy to be analysed
          */

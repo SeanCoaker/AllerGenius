@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.ar.core.Anchor
 import com.google.ar.core.Pose
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.TransformableNode
@@ -158,6 +159,8 @@ class ArFragmentController : Fragment() {
 
     /**
      * A function called when the fragemnt is being stopped.
+     *
+     * Reference: https://stackoverflow.com/questions/59103282/how-to-reset-arcore
      */
     override fun onStop() {
         super.onStop()
@@ -179,6 +182,8 @@ class ArFragmentController : Fragment() {
 
     /**
      * A function called to get the rotation compensation from the camera's orientation.
+     *
+     * Reference: https://firebase.google.com/docs/ml-kit/android/recognize-text#kotlin+ktx_1
      * 
      * return[Int] Return the rotation compensation.
      */
@@ -200,6 +205,8 @@ class ArFragmentController : Fragment() {
 
     /**
      * A fragment used to place the label on the AR camera view.
+     *
+     * Reference: https://kristisimakova.medium.com/how-to-add-ui-elements-to-ar-scene-in-arcore-d2ba64454478
      * 
      * @param[fragment] The AR fragment.
      * @param[anchor] The anchor used to display labels on.
@@ -283,6 +290,8 @@ class ArFragmentController : Fragment() {
 
     /**
      * A function called to add the label to AR view.
+     *
+     * Reference: https://kristisimakova.medium.com/how-to-add-ui-elements-to-ar-scene-in-arcore-d2ba64454478
      * 
      * @param[fragment] The AR fragment.
      * @param[anchor] The anchor to display the label onto.
@@ -293,8 +302,11 @@ class ArFragmentController : Fragment() {
         anchor: Anchor,
         renderable: Renderable
     ) {
+
         val anchorNode = AnchorNode(anchor)
         val node = TransformableNode(fragment.transformationSystem)
+
+        node.localPosition = Vector3(0f, 0f, -0.5f)
         node.renderable = renderable
         node.setParent(anchorNode)
         fragment.arSceneView.scene.addChild(anchorNode)

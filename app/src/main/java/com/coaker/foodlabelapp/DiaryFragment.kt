@@ -45,6 +45,8 @@ import kotlin.collections.ArrayList
  * A class used to handle how the diary feature in the application operates. The calendar view was
  * built using the calendar view library here https://github.com/kizitonwose/CalendarView.
  *
+ * Reference for some code used: https://github.com/kizitonwose/CalendarView
+ *
  * @author Sean Coaker
  * @since 1.0
  */
